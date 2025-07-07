@@ -1,40 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8">
   <title>Gestion des étudiants</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-    }
-
-    input,
-    button {
-      margin: 5px;
-      padding: 5px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
-
-    th,
-    td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #f2f2f2;
-    }
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px; padding: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
   </style>
 </head>
-
 <body>
 
   <h1>Gestion des étudiants</h1>
@@ -51,27 +27,20 @@
   <table id="table-etudiants">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Nom</th>
-        <th>Prénom</th>
-        <th>Email</th>
-        <th>Âge</th>
-        <th>Actions</th>
+        <th>ID</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Âge</th><th>Actions</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
 
   <script>
-    const apiBase = "http://localhost:8000";
-
+  const apiBase = "/Finance/ETU_3346_ETU_3351_ETU_3358/tp-flightphp-crud/ws";
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
       xhr.open(method, apiBase + url, true);
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
-          console.log(xhr.responseText);
           callback(JSON.parse(xhr.responseText));
         }
       };
@@ -150,5 +119,4 @@
   </script>
 
 </body>
-
 </html>
