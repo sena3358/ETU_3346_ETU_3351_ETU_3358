@@ -1,0 +1,31 @@
+<?php
+require_once __DIR__ . '/../helpers/Utils.php';
+require_once __DIR__ . '/../controllers/FondController.php';
+require_once __DIR__ . '/../controllers/TypePretController.php';
+require_once __DIR__ . '/../controllers/PretController.php';
+
+Flight::route('GET /fonds', ['FondController', 'getAll']);
+Flight::route('GET /fonds/total', ['FondController', 'getTotalFond']);
+Flight::route('GET /fonds/@id', ['FondController', 'getById']);
+Flight::route('POST /fonds', ['FondController', 'create']);
+
+Flight::route('GET /types_pret', ['TypePretController', 'getAll']);
+Flight::route('GET /types_pret/@id', ['TypePretController', 'getById']);
+Flight::route('POST /types_pret', ['TypePretController', 'create']);
+Flight::route('PUT /types_pret/@id', ['TypePretController', 'update']);
+Flight::route('DELETE /types_pret/@id', ['TypePretController', 'delete']);
+
+Flight::route('GET /pret', [PretController::class, 'getAll']);
+Flight::route('GET /pret/@id', [PretController::class, 'getById']);
+Flight::route('POST /pret', [PretController::class, 'create']);
+Flight::route('PUT /pret/@id', [PretController::class, 'update']);
+Flight::route('DELETE /pret/@id', [PretController::class, 'delete']);
+
+Flight::route('GET /utilisateur', [UtilisateurController::class, 'getAll']);
+Flight::route('GET /utilisateur/@id', [UtilisateurController::class, 'getById']);
+Flight::route('GET /utilisateur/role/@role', [UtilisateurController::class, 'getParRole']);
+Flight::route('POST /utilisateur', [UtilisateurController::class, 'create']);
+Flight::route('PUT /utilisateur/@id', [UtilisateurController::class, 'update']);
+Flight::route('DELETE /utilisateur/@id', [UtilisateurController::class, 'delete']);
+Flight::route('POST /login', [UtilisateurController::class, 'login']);
+Flight::route('PUT /utilisateur/@id/password', [UtilisateurController::class, 'updatePassword']);
