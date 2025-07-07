@@ -1,0 +1,28 @@
+
+TO-DO LIST - PROJET ÉTABLISSEMENT FINANCIER ET PRÊT BANCAIRE
+
+1. AJOUT DE FONDS DANS L'ÉTABLISSEMENT FINANCIER (EF)
+   - [ ] Créer une interface d’ajout de fonds pour les administrateurs.
+   - [ ] Implémenter la logique de mise à jour du solde global.
+   - [ ] Enregistrer l’historique des ajouts de fonds.
+
+2. CRÉATION DE TYPES DE PRÊTS AVEC TAUX
+   - [ ] Créer une interface de création de type de prêt.
+   - [ ] Permettre la saisie du taux d’intérêt, durée, nom.
+   - [ ] Sauvegarder les types de prêts en base de données.
+
+3. GESTION DE PRÊTS POUR LES CLIENTS
+   - [ ] Créer/ajouter un client dans le système.
+   - [ ] Associer un type de prêt à un client.
+   - [ ] Calculer montant à rembourser + mensualités.
+   - [ ] Vérifier la disponibilité des fonds.
+   - [ ] Enregistrer le prêt et mettre à jour le solde EF.
+   - [ ] Créer une interface de suivi des remboursements.
+   - [ ] Marquer les prêts comme "remboursé", "en cours", ou "en retard".
+
+4. FONCTIONNALITÉS COMPLÉMENTAIRES (BONUS)
+   - [ ] Créer un tableau de bord général (solde, encours, etc.).
+   - [ ] Ajouter des rappels d’échéances pour les remboursements.
+   - [ ] Gérer des alertes pour fonds insuffisants ou retards.
+   - [ ] Enregistrer l’historique complet des actions (logs).
+
