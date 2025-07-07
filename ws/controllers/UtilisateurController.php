@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Utilisateur.php';
 
+
 class UtilisateurController {
 
     // Récupérer tous les utilisateurs

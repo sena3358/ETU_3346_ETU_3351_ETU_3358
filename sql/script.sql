@@ -64,7 +64,7 @@ INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role, statut) VALUES
 INSERT INTO fonds_etablissement (montant, source, date_ajout) VALUES
 (10000000.00, 'Capital Initial', '2025-07-01'),
 (2500000.00, 'Investissement Externe', '2025-07-03'),
-(500000.00, 'Revenus d\'intérêt', '2025-07-05');
+(500000.00, 'Revenus intérêt', '2025-07-05');
 
 INSERT INTO type_pret (nom, taux_interet) VALUES
 ('Prêt personnel', 7.50),
@@ -72,6 +72,6 @@ INSERT INTO type_pret (nom, taux_interet) VALUES
 ('Micro-crédit', 12.00);
 
 INSERT INTO pret (id_utilisateur, id_type_pret, montant, taux, duree, date_debut, statut) VALUES
-(2, 1, 500000.00, 7.50, 12, '2025-07-06', 'EN_COURS'),
-(3, 2, 3000000.00, 5.00, 60, '2025-07-02', 'EN_COURS');
+(2, 1, 500000.00, 7.50, 12, '2025-07-06', 'en cours'),
+(3, 2, 3000000.00, 5.00, 60, '2025-07-02', 'refusé');
 

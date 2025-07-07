@@ -107,7 +107,9 @@
       <h2>Accorder un Prêt</h2>
         <input type="hidden" id="id">
         <input type="number" id="client">
-        <select id="type_pret" required></select>
+        <select id="type_pret" required>
+          <option value="#">Type pret</option>
+        </select>
         <input type="number" step="0.01" id="montant" placeholder="Montant" required>
         <input type="number" id="duree" placeholder="Durée (mois)" required>
         <input type="date" id="date_debut" required>
@@ -135,7 +137,7 @@
   </div>
 
   <script>
-    const apiBase = "http://localhost/tp-flightphp-crud/ws";
+    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -150,7 +152,7 @@
     }
 
     function chargerClients() {
-      ajax("GET", "/utilisateurs/role/CLIENT", null, (data) => {
+      ajax("GET", "/utilisateur/role/CLIENT", null, (data) => {
         const select = document.getElementById("client");
         select.innerHTML = "<option value=''>--Choisir client--</option>";
         data.forEach(u => {
@@ -170,7 +172,7 @@
     }
 
     function creerPret() {
-      const id = document.getElementById("id")
+      const id = document.getElementById("id").value;
       const id_utilisateur = document.getElementById("client").value;
       const id_type_pret = document.getElementById("type_pret").value;
       const taux = document.querySelector(`#type_pret option:checked`).dataset.taux;
@@ -178,18 +180,26 @@
       const duree = document.getElementById("duree").value;
       const date_debut = document.getElementById("date_debut").value;
 
-      const data = `id_utilisateur=${id_utilisateur}&id_type_pret=${id_type_pret}&taux=${taux}&montant=${montant}&duree=${duree}&date_debut=${date_debut}`;
+      const data = JSON.stringify({
+        id_utilisateur,
+        id_type_pret,
+        taux,
+        montant,
+        duree,
+        date_debut
+      });
 
       if (id) {
         ajax("PUT", `/pret/${id}`, data, () => {
-          chargerTypesPret();
+          chargerPrets();
         });
       } else {
         ajax("POST", "/pret", data, () => {
-          chargerTypesPret(); // 🔁 actualise l'affichage du total
+          chargerPrets();
         });
       }
     }
+
 
     function chargerPrets() {
       ajax("GET", "/pret", null, (data) => {
