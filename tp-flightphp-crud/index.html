@@ -1,122 +1,466 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Gestion des étudiants</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, button { margin: 5px; padding: 5px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Bancaire - Système de Prêts</title>
+    <!-- Bootstrap CSS -->
+    <link href="ws/assets/bootstrap5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .status-pending {
+            color: #ffc107;
+        }
+        .status-approved {
+            color: #28a745;
+        }
+        .status-rejected {
+            color: #dc3545;
+        }
+        .form-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .navbar {
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-university me-2"></i>Gestion Prêts
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="index.html">
+                                <i class="fas fa-home me-1"></i>Accueil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="type_pret.html">
+                                <i class="fas fa-list-alt me-1"></i>Types de Prêt
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ajout_fond.html">
+                                <i class="fas fa-money-bill-wave me-1"></i>Ajout de Fonds
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="liste_pret.html">
+                                <i class="fas fa-clipboard-list me-1"></i>Liste Prêts/Demandes
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-  <h1>Gestion des étudiants</h1>
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-4"><i class="fas fa-university me-2"></i>Gestion des Prêts Bancaires</h1>
+                <p class="lead">Système de gestion des demandes de prêt</p>
+            </div>
+        </div>
 
-  <div>
-    <input type="hidden" id="id">
-    <input type="text" id="nom" placeholder="Nom">
-    <input type="text" id="prenom" placeholder="Prénom">
-    <input type="email" id="email" placeholder="Email">
-    <input type="number" id="age" placeholder="Âge">
-    <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
-  </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h3 class="card-title mb-0"><i class="fas fa-hand-holding-usd me-2"></i>Nouvelle Demande</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="pretForm">
+                            <div class="mb-3">
+                                <label for="clientId" class="form-label">Client</label>
+                                <select class="form-select" id="clientId" required>
+                                    <option value="" selected disabled>Choisir un client...</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="typePretId" class="form-label">Type de Prêt</label>
+                                <select class="form-select" id="typePretId" required>
+                                    <option value="" selected disabled>Choisir un type de prêt...</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="montant" class="form-label">Montant (€)</label>
+                                <input type="number" class="form-control" id="montant" placeholder="5000" min="100" step="100" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="taux" class="form-label">Taux d'intérêt (%)</label>
+                                <input type="number" class="form-control" id="taux" placeholder="3.5" min="0.1" max="20" step="0.1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="duree" class="form-label">Durée (mois)</label>
+                                <input type="number" class="form-control" id="duree" placeholder="36" min="6" max="360" required>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-dark">
+                                    <i class="fas fa-paper-plane me-2"></i>Soumettre la demande
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-  <table id="table-etudiants">
-    <thead>
-      <tr>
-        <th>ID</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Âge</th><th>Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h3 class="card-title mb-0"><i class="fas fa-calculator me-2"></i>Simulation</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="simulationResult" class="text-center py-4">
+                            <p class="text-muted">Renseignez les informations pour voir la simulation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <script>
-  const apiBase = "/Finance/ETU_3346_ETU_3351_ETU_3358/tp-flightphp-crud/ws";
-    function ajax(method, url, data, callback) {
-      const xhr = new XMLHttpRequest();
-      xhr.open(method, apiBase + url, true);
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          callback(JSON.parse(xhr.responseText));
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="card-title mb-0"><i class="fas fa-list me-2"></i>Liste des Prêts</h3>
+                            <button id="refreshBtn" class="btn btn-sm btn-light">
+                                <i class="fas fa-sync-alt me-1"></i>Actualiser
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="table-prets">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Client</th>
+                                        <th>Type</th>
+                                        <th>Montant</th>
+                                        <th>Taux</th>
+                                        <th>Durée</th>
+                                        <th>Mensualité</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour les détails -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Détails du prêt #<span id="modalPretId"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="amortissementTable"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="ws/assets/bootstrap5//dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const apiBase = "http://localhost:8000"; // Adaptez selon votre configuration
+        
+        // Chargement initial
+        document.addEventListener('DOMContentLoaded', () => {
+            chargerClients();
+            chargerTypesPret();
+            chargerPrets();
+            setupEventListeners();
+        });
+
+        // Gestion des événements
+        function setupEventListeners() {
+            document.getElementById('pretForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                demanderPret();
+            });
+
+            document.getElementById('refreshBtn').addEventListener('click', chargerPrets);
+
+            // Simulation en temps réel
+            ['montant', 'taux', 'duree'].forEach(id => {
+                document.getElementById(id).addEventListener('input', calculerMensualite);
+            });
         }
-      };
-      xhr.send(data);
-    }
 
-    function chargerEtudiants() {
-      ajax("GET", "/etudiants", null, (data) => {
-        const tbody = document.querySelector("#table-etudiants tbody");
-        tbody.innerHTML = "";
-        data.forEach(e => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${e.id}</td>
-            <td>${e.nom}</td>
-            <td>${e.prenom}</td>
-            <td>${e.email}</td>
-            <td>${e.age}</td>
-            <td>
-              <button onclick='remplirFormulaire(${JSON.stringify(e)})'>✏️</button>
-              <button onclick='supprimerEtudiant(${e.id})'>🗑️</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      });
-    }
+        // Charger la liste des clients
+        function chargerClients() {
+            fetch(`${apiBase}/clients`)
+                .then(response => response.json())
+                .then(clients => {
+                    const select = document.getElementById('clientId');
+                    select.innerHTML = '<option value="" selected disabled>Choisir un client...</option>';
+                    
+                    clients.forEach(client => {
+                        const option = document.createElement('option');
+                        option.value = client.id;
+                        option.textContent = `${client.nom} ${client.prenom} (${client.email})`;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(console.error);
+        }
 
-    function ajouterOuModifier() {
-      const id = document.getElementById("id").value;
-      const nom = document.getElementById("nom").value;
-      const prenom = document.getElementById("prenom").value;
-      const email = document.getElementById("email").value;
-      const age = document.getElementById("age").value;
 
-      const data = `nom=${encodeURIComponent(nom)}&prenom=${encodeURIComponent(prenom)}&email=${encodeURIComponent(email)}&age=${age}`;
+        // Charger la liste des types de prêt
+        function chargerTypesPret() {
+            fetch(`${apiBase}/types-pret`)
+                .then(response => response.json())
+                .then(types => {
+                    const select = document.getElementById('typePretId');
+                    select.innerHTML = '<option value="" selected disabled>Choisir un type de prêt...</option>';
+                    
+                    types.forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type.id;
+                        option.textContent = `${type.nom} (${type.description})`;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(console.error);
+        }
 
-      if (id) {
-        ajax("PUT", `/etudiants/${id}`, data, () => {
-          resetForm();
-          chargerEtudiants();
-        });
-      } else {
-        ajax("POST", "/etudiants", data, () => {
-          resetForm();
-          chargerEtudiants();
-        });
-      }
-    }
+        // Charger la liste des prêts
+        function chargerPrets() {
+            fetch(`${apiBase}/prets`)
+                .then(response => response.json())
+                .then(prets => {
+                    const tbody = document.querySelector('#table-prets tbody');
+                    tbody.innerHTML = '';
+                    
+                    prets.forEach(pret => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${pret.id}</td>
+                            <td>${pret.nom} ${pret.prenom}</td>
+                            <td>${pret.type_pret || 'Standard'}</td>
+                            <td>${pret.montant.toLocaleString('fr-FR')} €</td>
+                            <td>${pret.taux}%</td>
+                            <td>${pret.duree_mois} mois</td>
+                            <td>${pret.mensualite ? pret.mensualite.toLocaleString('fr-FR') + ' €' : 'N/A'}</td>
+                            <td>
+                                <span class="badge ${getStatusClass(pret.statut)}">
+                                    ${formatStatus(pret.statut)}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-dark" onclick="voirDetails(${pret.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                ${pret.statut === 'en_attente' ? `
+                                <button class="btn btn-sm btn-outline-success ms-1" onclick="changerStatut(${pret.id}, 'approuvé')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger ms-1" onclick="changerStatut(${pret.id}, 'rejeté')">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                ` : ''}
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(console.error);
+        }
 
-    function remplirFormulaire(e) {
-      document.getElementById("id").value = e.id;
-      document.getElementById("nom").value = e.nom;
-      document.getElementById("prenom").value = e.prenom;
-      document.getElementById("email").value = e.email;
-      document.getElementById("age").value = e.age;
-    }
+        // Soumettre une nouvelle demande de prêt
+        function demanderPret() {
+            const formData = {
+                client_id: document.getElementById('clientId').value,
+                type_pret_id: document.getElementById('typePretId').value,
+                montant: parseFloat(document.getElementById('montant').value),
+                taux: parseFloat(document.getElementById('taux').value),
+                duree_mois: parseInt(document.getElementById('duree').value)
+            };
 
-    function supprimerEtudiant(id) {
-      if (confirm("Supprimer cet étudiant ?")) {
-        ajax("DELETE", `/etudiants/${id}`, null, () => {
-          chargerEtudiants();
-        });
-      }
-    }
+            fetch(`${apiBase}/prets/demande`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur lors de la demande');
+                return response.json();
+            })
+            .then(data => {
+                showAlert(`Demande de prêt #${data.pret_id} enregistrée avec succès!`, 'success');
+                document.getElementById('pretForm').reset();
+                chargerPrets();
+            })
+            .catch(error => {
+                showAlert(error.message, 'danger');
+                console.error(error);
+            });
+        }
 
-    function resetForm() {
-      document.getElementById("id").value = "";
-      document.getElementById("nom").value = "";
-      document.getElementById("prenom").value = "";
-      document.getElementById("email").value = "";
-      document.getElementById("age").value = "";
-    }
+        // Calculer la mensualité
+        function calculerMensualite() {
+            const montant = parseFloat(document.getElementById('montant').value) || 0;
+            const taux = parseFloat(document.getElementById('taux').value) || 0;
+            const duree = parseInt(document.getElementById('duree').value) || 0;
 
-    chargerEtudiants();
-  </script>
+            if (montant > 0 && taux > 0 && duree > 0) {
+                const tauxMensuel = taux / 100 / 12;
+                const mensualite = montant * tauxMensuel / (1 - Math.pow(1 + tauxMensuel, -duree));
+                
+                document.getElementById('simulationResult').innerHTML = `
+                    <h4>Résultat de la simulation</h4>
+                    <div class="alert alert-info">
+                        <p><strong>Mensualité estimée :</strong> ${mensualite.toFixed(2)} €</p>
+                        <p><strong>Coût total du crédit :</strong> ${(mensualite * duree).toFixed(2)} €</p>
+                        <p><strong>Intérêts totaux :</strong> ${(mensualite * duree - montant).toFixed(2)} €</p>
+                    </div>
+                `;
+            }
+        }
 
+        // Voir les détails d'un prêt
+        function voirDetails(pretId) {
+            fetch(`${apiBase}/prets/${pretId}/amortissement`)
+                .then(response => response.json())
+                .then(amortissement => {
+                    document.getElementById('modalPretId').textContent = pretId;
+                    
+                    let tableHTML = `
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Mois</th>
+                                    <th>Capital</th>
+                                    <th>Intérêts</th>
+                                    <th>Capital restant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    amortissement.forEach(item => {
+                        tableHTML += `
+                            <tr>
+                                <td>${item.mois}</td>
+                                <td>${item.capital.toFixed(2)} €</td>
+                                <td>${item.interets.toFixed(2)} €</td>
+                                <td>${item.capital_restant.toFixed(2)} €</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableHTML += `</tbody></table>`;
+                    document.getElementById('amortissementTable').innerHTML = tableHTML;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+                    modal.show();
+                })
+                .catch(console.error);
+        }
+
+        // Changer le statut d'un prêt
+        function changerStatut(pretId, statut) {
+            if (!confirm(`Êtes-vous sûr de vouloir ${statut === 'approuvé' ? 'approuver' : 'rejeter'} ce prêt ?`)) return;
+            
+            fetch(`${apiBase}/prets/${pretId}/statut`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ statut })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur lors de la mise à jour');
+                return response.json();
+            })
+            .then(() => {
+                showAlert(`Statut du prêt mis à jour avec succès!`, 'success');
+                chargerPrets();
+            })
+            .catch(error => {
+                showAlert(error.message, 'danger');
+                console.error(error);
+            });
+        }
+
+        // Helper functions
+        function formatStatus(status) {
+            const statusMap = {
+                'en_attente': 'En attente',
+                'approuvé': 'Approuvé',
+                'rejeté': 'Rejeté'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getStatusClass(status) {
+            const classMap = {
+                'en_attente': 'bg-warning',
+                'approuvé': 'bg-success',
+                'rejeté': 'bg-danger'
+            };
+            return classMap[status] || 'bg-secondary';
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show fixed-top mx-auto mt-3`;
+            alertDiv.style.maxWidth = '600px';
+            alertDiv.style.zIndex = '1100';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 150);
+            }, 5000);
+        }
+    </script>
 </body>
 </html>

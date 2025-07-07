@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajout de Fonds</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-university me-2"></i>Gestion Prêts
+                </a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">
+                                <i class="fas fa-home me-1"></i>Accueil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="type_pret.html">
+                                <i class="fas fa-list-alt me-1"></i>Types de Prêt
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="ajout_fond.html">
+                                <i class="fas fa-money-bill-wave me-1"></i>Ajout de Fonds
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="liste_pret.html">
+                                <i class="fas fa-clipboard-list me-1"></i>Liste Prêts/Demandes
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <h2 class="mb-4"><i class="fas fa-money-bill-wave me-2"></i>Ajout de Fonds</h2>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="card-title mb-0">Ajouter des Fonds</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="ajoutFondForm">
+                            <div class="mb-3">
+                                <label for="montantFond" class="form-label">Montant (€)</label>
+                                <input type="number" class="form-control" id="montantFond" min="1000" step="100" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="sourceFond" class="form-label">Source</label>
+                                <input type="text" class="form-control" id="sourceFond" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="card-title mb-0">Historique des Fonds</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped" id="tableFonds">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Montant</th>
+                                    <th>Source</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            chargerHistoriqueFonds();
+            
+            document.getElementById('ajoutFondForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                ajouterFond();
+            });
+        });
+
+        function chargerHistoriqueFonds() {
+            fetch('http://localhost:8000/fonds')
+                .then(response => response.json())
+                .then(fonds => {
+                    const tbody = document.querySelector('#tableFonds tbody');
+                    tbody.innerHTML = '';
+                    
+                    fonds.forEach(fond => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${new Date(fond.date).toLocaleDateString()}</td>
+                            <td>${fond.montant.toLocaleString('fr-FR')} €</td>
+                            <td>${fond.source}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
+
+        function ajouterFond() {
+            const formData = {
+                montant: parseFloat(document.getElementById('montantFond').value),
+                source: document.getElementById('sourceFond').value
+            };
+
+            fetch('http://localhost:8000/fonds', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(() => {
+                document.getElementById('ajoutFondForm').reset();
+                chargerHistoriqueFonds();
+                alert('Fonds ajoutés avec succès!');
+            });
+        }
+    </script>
+</body>
+</html>

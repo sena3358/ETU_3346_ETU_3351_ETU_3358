@@ -1,6 +1,7 @@
 <?php
 
 class Pret {
+<<<<<<< Updated upstream:ws/models/Pret.php
 
     public static function getAll() {
         $db = getDB();
@@ -70,3 +71,26 @@ class Pret {
 }
 
 ?>
+=======
+    public static function all() {
+        // Jointure avec clients et types_pret
+        $query = "SELECT d.*, c.nom, c.prenom, t.nom as type_pret 
+                  FROM demandes_pret d
+                  JOIN clients c ON d.client_id = c.id
+                  JOIN types_pret t ON d.type_pret_id = t.id";
+        // Exécution et retour des résultats
+    }
+
+    public static function create($data) {
+        $query = "INSERT INTO demandes_pret 
+                 (client_id, type_pret_id, montant, duree_mois, taux_final) 
+                 VALUES (?, ?, ?, ?, ?)";
+        // Exécution avec les paramètres
+    }
+    
+    // Autres méthodes...
+}
+
+
+?>
+>>>>>>> Stashed changes:tp-flightphp-crud/ws/models/Pret.php
