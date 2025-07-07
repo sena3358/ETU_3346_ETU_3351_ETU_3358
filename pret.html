@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Prêts - Clients</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background-color: #2c3e50;
+      width: 200px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-top: 20px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      font-size: 17px;
+      transition: background-color 0.3s;
+    }
+
+    .navbar a:hover {
+      background-color: #34495e;
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #34495e;
+    }
+
+    .navbar-links {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      gap: 30px;
+    }
+
+    .formulaire, .liste {
+      flex: 1;
+    }
+
+    input, select, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-brand">Établissement Financier</div>
+    <div class="navbar-links">
+      <a href="#">Accueil</a>
+      <a href="index.html">Gestion des Fonds</a>
+      <a href="types_pret.html">Types de Prêts</a>
+      <a href="#" class="active">Prêts</a>
+      <a href="#">Remboursements</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="formulaire">
+      <h2>Accorder un Prêt</h2>
+        <input type="hidden" id="id">
+        <input type="number" id="client">
+        <select id="type_pret" required></select>
+        <input type="number" step="0.01" id="montant" placeholder="Montant" required>
+        <input type="number" id="duree" placeholder="Durée (mois)" required>
+        <input type="date" id="date_debut" required>
+        <button onclick="creerPret()">Ajouter le prêt</button>
+    </div>
+
+    <div class="liste">
+      <h2>Liste des Prêts</h2>
+      <table id="table-prets">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Montant</th>
+            <th>Taux (%)</th>
+            <th>Durée</th>
+            <th>Date</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const apiBase = "http://localhost/tp-flightphp-crud/ws";
+
+    function ajax(method, url, data, callback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, apiBase + url, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          callback(JSON.parse(xhr.responseText));
+        }
+      };
+      xhr.send(data);
+    }
+
+    function chargerClients() {
+      ajax("GET", "/utilisateurs/role/CLIENT", null, (data) => {
+        const select = document.getElementById("client");
+        select.innerHTML = "<option value=''>--Choisir client--</option>";
+        data.forEach(u => {
+          select.innerHTML += `<option value="${u.id}">${u.nom} ${u.prenom}</option>`;
+        });
+      });
+    }
+
+    function chargerTypesPret() {
+      ajax("GET", "/types_pret", null, (data) => {
+        const select = document.getElementById("type_pret");
+        select.innerHTML = "<option value=''>--Choisir type--</option>";
+        data.forEach(t => {
+          select.innerHTML += `<option value="${t.id}" data-taux="${t.taux_interet}">${t.nom} (${t.taux_interet}%)</option>`;
+        });
+      });
+    }
+
+    function creerPret() {
+      const id = document.getElementById("id")
+      const id_utilisateur = document.getElementById("client").value;
+      const id_type_pret = document.getElementById("type_pret").value;
+      const taux = document.querySelector(`#type_pret option:checked`).dataset.taux;
+      const montant = document.getElementById("montant").value;
+      const duree = document.getElementById("duree").value;
+      const date_debut = document.getElementById("date_debut").value;
+
+      const data = `id_utilisateur=${id_utilisateur}&id_type_pret=${id_type_pret}&taux=${taux}&montant=${montant}&duree=${duree}&date_debut=${date_debut}`;
+
+      if (id) {
+        ajax("PUT", `/pret/${id}`, data, () => {
+          chargerTypesPret();
+        });
+      } else {
+        ajax("POST", "/pret", data, () => {
+          chargerTypesPret(); // 🔁 actualise l'affichage du total
+        });
+      }
+    }
+
+    function chargerPrets() {
+      ajax("GET", "/pret", null, (data) => {
+        const tbody = document.querySelector("#table-prets tbody");
+        tbody.innerHTML = "";
+        data.forEach(p => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${p.id}</td>
+            <td>${p.nom_client}</td>
+            <td>${p.nom_type}</td>
+            <td>${parseFloat(p.montant).toFixed(2)} Ar</td>
+            <td>${p.taux}%</td>
+            <td>${p.duree} mois</td>
+            <td>${p.date_debut}</td>
+            <td>${p.statut}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    chargerClients();
+    chargerTypesPret();
+    chargerPrets();
+  </script>
+</body>
+</html>

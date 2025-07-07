@@ -29,6 +29,11 @@ class EtudiantController {
     Flight::json(['message' => 'Étudiant modifié']);
 }
 
+    // public static function update($id) {
+    //     $data = Flight::request()->data;
+    //     Etudiant::update($id, $data);
+    //     Flight::json(['message' => 'Étudiant modifié']);
+    // }
 
     public static function delete($id) {
         Etudiant::delete($id);
