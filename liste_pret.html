@@ -6,7 +6,6 @@
   <title>Liste des Prêts - Établissement Financier</title>
   <!-- Bootstrap 5 CSS -->
   <link href="ws/assets/bootstrap5/dist/css/bootstrap.min.css" rel="stylesheet">
-  
   <!-- Font Awesome -->
   <link href="assets/fontawesome/css/all.min.css" rel="stylesheet">
   <style>
@@ -145,28 +144,43 @@
       margin-right: 0.5rem;
       margin-bottom: 0.5rem;
     }
-    .dropdown-toggle::after {
-      display: none;
-    }
-
-    .dropdown-menu {
-      min-width: 180px;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    .dropdown-item {
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-    }
-
-    .dropdown-item i {
-      width: 18px;
-      text-align: center;
-    }
     
     .badge-filter.active {
       background-color: var(--accent-color);
+    }
+    
+    /* Styles spécifiques pour le menu déroulant */
+    .dropdown-toggle::after {
+      display: none;
+    }
+    
+    .dropdown-menu {
+      width: 180px;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .dropdown-item {
+      font-size: 0.85rem;
+    }
+    
+    .dropdown-item i {
+      width: 18px;
+      text-align: center;
+      margin-right: 8px;
+    }
+    
+    .dropdown-divider {
+      margin: 0.25rem 0;
+    }
+    
+    .action-btn {
+      padding: 0.25rem 0.5rem;
+    }
+    
+    /* Style pour les statuts */
+    .statut-cell {
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -347,27 +361,50 @@
     }
 
     function validerPret(id) {
-        if (confirm("Voulez-vous vraiment valider ce prêt ? Cette action est irréversible.")) {
-            fetch(`${apiBase}/prets/${id}/validate`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Erreur lors de la validation');
-                return response.json();
-            })
-            .then(data => {
-                showToast("Prêt validé avec succès", "success");
-                // Recharger les prêts après 1 seconde
-                setTimeout(chargerPrets, 1000);
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                showToast(error.message, "danger");
-            });
-        }
+      if (confirm("Voulez-vous vraiment valider ce prêt ? Cette action est irréversible.")) {
+        fetch(`${apiBase}/prets/${id}/validate`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Erreur lors de la validation');
+          return response.json();
+        })
+        .then(data => {
+          showToast("Prêt validé avec succès", "success");
+          // Recharger les prêts après 1 seconde
+          setTimeout(chargerPrets, 1000);
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          showToast(error.message, "danger");
+        });
+      }
+    }
+
+    function editerPret(id) {
+      // Récupérer les données du prêt et remplir un formulaire de modification
+      console.log("Édition du prêt", id);
+      // Implémentez la logique d'édition selon vos besoins
+    }
+
+    function supprimerPret(id) {
+      if (confirm("Voulez-vous vraiment supprimer ce prêt ? Cette action est irréversible.")) {
+        fetch(`${apiBase}/pret/${id}`, {
+          method: 'DELETE'
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Erreur lors de la suppression');
+          showToast("Prêt supprimé avec succès", "success");
+          chargerPrets();
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          showToast(error.message, "danger");
+        });
+      }
     }
 
     function appliquerFiltres() {
@@ -435,38 +472,44 @@
           <td>${p.taux}%</td>
           <td>${p.duree} mois</td>
           <td>${p.date_debut}</td>
+          <td class="statut-cell">
+            <span class="status-badge status-${p.statut.toLowerCase().replace('é', 'e').replace(' ', '_')}">
+              ${p.statut}
+            </span>
+          </td>
           <td>
-          <div class="dropdown">
-            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton${p.id}" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-ellipsis-v"></i>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton${p.id}">
-              <li>
-                <a class="dropdown-item" href="details_pret.html?id=${p.id}">
-                  <i class="fas fa-eye me-2"></i>Voir détails
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#" onclick="editerPret(${p.id}); return false;">
-                  <i class="fas fa-edit me-2"></i>Modifier
-                </a>
-              </li>
-              ${p.statut === "en attente" ? `
-              <li>
-                <a class="dropdown-item text-success" href="#" onclick="validerPret(${p.id}); return false;">
-                  <i class="fas fa-check-circle me-2"></i>Valider
-                </a>
-              </li>
-              ` : ''}
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <a class="dropdown-item text-danger" href="#" onclick="supprimerPret(${p.id}); return false;">
-                  <i class="fas fa-trash-alt me-2"></i>Supprimer
-                </a>
-              </li>
-            </ul>
-          </div>
-        </td>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-primary dropdown-toggle action-btn" type="button" 
+                      id="dropdownMenuButton${p.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton${p.id}">
+                <li>
+                  <a class="dropdown-item" href="details_pret.html?id=${p.id}">
+                    <i class="fas fa-eye"></i> Voir détails
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" onclick="editerPret(${p.id}); return false;">
+                    <i class="fas fa-edit"></i> Modifier
+                  </a>
+                </li>
+                ${p.statut === "en attente" ? `
+                <li>
+                  <a class="dropdown-item text-success" href="#" onclick="validerPret(${p.id}); return false;">
+                    <i class="fas fa-check-circle"></i> Valider
+                  </a>
+                </li>
+                ` : ''}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item text-danger" href="#" onclick="supprimerPret(${p.id}); return false;">
+                    <i class="fas fa-trash-alt"></i> Supprimer
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </td>
         `;
         tbody.appendChild(tr);
       });
@@ -476,29 +519,6 @@
       document.getElementById("total-prets").textContent = allPrets.length;
       document.getElementById("total-attente").textContent = allPrets.filter(p => p.statut === "en attente").length;
       document.getElementById("total-cours").textContent = allPrets.filter(p => p.statut === "en cours").length;
-    }
-
-    function editerPret(id) {
-      // Récupérer les données du prêt et remplir un formulaire de modification
-      console.log("Édition du prêt", id);
-      // Implémentez la logique d'édition selon vos besoins
-    }
-
-    function supprimerPret(id) {
-      if (confirm("Voulez-vous vraiment supprimer ce prêt ? Cette action est irréversible.")) {
-        fetch(`${apiBase}/pret/${id}`, {
-          method: 'DELETE'
-        })
-        .then(response => {
-          if (!response.ok) throw new Error('Erreur lors de la suppression');
-          showToast("Prêt supprimé avec succès", "success");
-          chargerPrets();
-        })
-        .catch(error => {
-          console.error('Erreur:', error);
-          showToast(error.message, "danger");
-        });
-      }
     }
 
     function showToast(message, type = "success") {
