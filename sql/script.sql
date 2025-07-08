@@ -50,8 +50,8 @@ CREATE TABLE remboursement (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_pret INT NOT NULL,
     date_paiement DATE NOT NULL,
-    montant DECIMAL(12,2) NOT NULL,
-    statut ENUM('payé', 'en retard', 'impayé') DEFAULT 'payé',
+    amortissement DECIMAL(12,2) NOT NULL,
+    interet DECIMAL(12,2) NOT NULL,
     FOREIGN KEY (id_pret) REFERENCES pret(id)
 );
 
@@ -75,3 +75,23 @@ INSERT INTO pret (id_utilisateur, id_type_pret, montant, taux, duree, date_debut
 (2, 1, 500000.00, 7.50, 12, '2025-07-06', 'en cours'),
 (3, 2, 3000000.00, 5.00, 60, '2025-07-02', 'refusé');
 
+
+
+-- Supposons que tu as des prêts avec id 1, 2 et 3
+INSERT INTO remboursement (id_pret, date_paiement, amortissement, interet) VALUES
+(1, '2024-01-01', 50000.00, 5000.00),
+(1, '2024-02-01', 50000.00, 4000.00),
+(1, '2024-03-01', 50000.00, 3000.00),
+(1, '2024-04-01', 50000.00, 2000.00),
+(1, '2024-05-01', 50000.00, 1000.00),
+
+(2, '2024-06-01', 25000.00, 2000.00),
+(2, '2024-07-01', 25000.00, 1500.00),
+(2, '2024-08-01', 25000.00, 1000.00),
+(2, '2024-09-01', 25000.00, 500.00);
+
+-- (3, '2024-10-01', 30000.00, 3000.00),
+-- (3, '2024-11-01', 30000.00, 2500.00),
+-- (3, '2024-12-01', 30000.00, 2000.00),
+-- (3, '2025-01-01', 30000.00, 1500.00),
+-- (3, '2025-02-01', 30000.00, 1000.00);

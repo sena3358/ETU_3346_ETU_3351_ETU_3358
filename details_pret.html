@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détail du Prêt - Établissement Financier</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="ws/assets/bootstrap5/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="assets/fontawesome/css/all.min.css" rel="stylesheet">
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34495e;
+      --accent-color: #3498db;
+      --success-color: #28a745;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+    }
+    
+    .sidebar {
+      background-color: var(--primary-color);
+      color: white;
+      height: 100vh;
+      position: fixed;
+      padding-top: 1rem;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-brand {
+      font-weight: 600;
+      font-size: 1.25rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 1rem;
+    }
+    
+    .nav-link {
+      color: rgba(255,255,255,0.8);
+      border-radius: 0.25rem;
+      margin: 0.25rem 1rem;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      color: white;
+      background-color: var(--secondary-color);
+    }
+    
+    .nav-link i {
+      width: 1.5rem;
+      text-align: center;
+      margin-right: 0.5rem;
+    }
+    
+    .main-content {
+      margin-left: 250px;
+      padding: 2rem;
+    }
+    
+    .card {
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+      margin-bottom: 1.5rem;
+      border: none;
+    }
+    
+    .card-header {
+      background-color: white;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-weight: 600;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .pret-info {
+      background-color: white;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .info-group {
+      margin-bottom: 1rem;
+    }
+    
+    .info-label {
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 0.25rem;
+    }
+    
+    .info-value {
+      font-size: 1.1rem;
+    }
+    
+    .table-responsive {
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    
+    .btn-export {
+      background-color: var(--success-color);
+      border-color: var(--success-color);
+    }
+    
+    .status-badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    
+    .status-en_cours {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+    
+    .status-termine {
+      background-color: #e8f5e9;
+      color: #388e3c;
+    }
+    
+    .status-en_retard {
+      background-color: #ffebee;
+      color: #d32f2f;
+    }
+    
+    .print-only {
+      display: none;
+    }
+    
+    @media print {
+      .sidebar, .no-print {
+        display: none !important;
+      }
+      .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+      }
+      .print-only {
+        display: block;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar d-flex flex-column flex-shrink-0 p-3" style="width: 250px;">
+    <div class="sidebar-brand">
+      <i class="fas fa-university me-2"></i>
+      Établissement Financier
+    </div>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item">
+        <a href="#" class="nav-link">
+          <i class="fas fa-home"></i>
+          Accueil
+        </a>
+      </li>
+      <li>
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-coins"></i>
+          Gestion des Fonds
+        </a>
+      </li>
+      <li>
+        <a href="types_pret.html" class="nav-link">
+          <i class="fas fa-list-alt"></i>
+          Types de prêts
+        </a>
+      </li>
+      <li>
+        <a href="pret.html" class="nav-link">
+          <i class="fas fa-hand-holding-usd"></i>
+          Prêts
+        </a>
+      </li>
+      <li>
+        <a href="remboursement.html" class="nav-link">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Remboursements
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+        <h1 class="h3 mb-0 text-gray-800">
+          <i class="fas fa-file-invoice-dollar me-2"></i>Détail du Prêt
+        </h1>
+        <button id="exportPdf" class="btn btn-success" style="text-align: center;">
+          <i class="fas fa-file-pdf me-2"></i>Exporter en PDF
+        </button>
+      </div>
+      
+      <div class="print-only">
+        <h2>Établissement Financier</h2>
+        <h3>Détail du Prêt N°<span id="print-pret-id"></span></h3>
+        <p>Date d'édition: <span id="print-date"></span></p>
+      </div>
+      
+      <!-- Informations générales -->
+      <div class="card">
+        <div class="card-header">
+          <span>Informations du prêt</span>
+          <span id="pret-statut" class="status-badge status-en_cours">En cours</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="info-group">
+                <div class="info-label">Client</div>
+                <div class="info-value" id="client-nom">-</div>
+              </div>
+              <div class="info-group">
+                <div class="info-label">Type de prêt</div>
+                <div class="info-value" id="type-pret">-</div>
+              </div>
+              <div class="info-group">
+                <div class="info-label">Montant</div>
+                <div class="info-value" id="montant">-</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-group">
+                <div class="info-label">Taux d'intérêt</div>
+                <div class="info-value" id="taux">-</div>
+              </div>
+              <div class="info-group">
+                <div class="info-label">Durée</div>
+                <div class="info-value" id="duree">-</div>
+              </div>
+              <div class="info-group">
+                <div class="info-label">Date de début</div>
+                <div class="info-value" id="date-debut">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tableau d'amortissement -->
+      <div class="card">
+        <div class="card-header">
+          <span>Tableau d'amortissement</span>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="table-amortissement">
+              <thead class="table-light">
+                <tr>
+                  <th>Mois</th>
+                  <th>Date</th>
+                  <th>Capital</th>
+                  <th>Intérêts</th>
+                  <th>Mensualité</th>
+                  <th>Capital restant</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Résumé -->
+      <div class="card">
+        <div class="card-header">
+          <span>Résumé du prêt</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="info-group">
+                <div class="info-label">Montant total remboursé</div>
+                <div class="info-value" id="total-rembourse">-</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-group">
+                <div class="info-label">Intérêts totaux</div>
+                <div class="info-value" id="total-interets">-</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-group">
+                <div class="info-label">Reste à payer</div>
+                <div class="info-value" id="reste-a-payer">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle with Popper -->
+  <script src="ws/assets/bootstrap5/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Initialisation jsPDF
+    const { jsPDF } = window.jspdf;
+    
+    // Récupération de l'ID du prêt depuis l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const pretId = urlParams.get('id');
+    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
+    
+    // Fonction pour formater les nombres
+    function formatMoney(amount) {
+      return parseFloat(amount).toLocaleString('fr-FR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) + ' Ar';
+    }
+    
+    // Fonction pour formater les dates
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('fr-FR', options);
+    }
+    
+    // Charger les détails du prêt
+    function chargerDetailsPret() {
+      if (!pretId) {
+        alert("Aucun prêt spécifié");
+        return;
+      }
+      
+      fetch(`${apiBase}/prets/${pretId}`)
+        .then(response => response.json())
+        .then(pret => {
+          // Remplir les informations de base
+          document.getElementById('client-nom').textContent = `${pret.nom_client} ${pret.prenom_client}`;
+          document.getElementById('type-pret').textContent = pret.nom_type;
+          document.getElementById('montant').textContent = formatMoney(pret.montant);
+          document.getElementById('taux').textContent = `${pret.taux}%`;
+          document.getElementById('duree').textContent = `${pret.duree_mois} mois`;
+          document.getElementById('date-debut').textContent = formatDate(pret.date_debut);
+          document.getElementById('pret-statut').textContent = pret.statut;
+          document.getElementById('pret-statut').className = `status-badge status-${pret.statut.toLowerCase().replace('é', 'e')}`;
+          document.getElementById('print-pret-id').textContent = pretId;
+          
+          // Mettre à jour la date d'édition
+          document.getElementById('print-date').textContent = new Date().toLocaleDateString('fr-FR');
+        });
+      
+      // Charger le tableau d'amortissement
+      fetch(`${apiBase}/prets/${pretId}/amortissement`)
+        .then(response => response.json())
+        .then(amortissement => {
+          const tbody = document.querySelector("#table-amortissement tbody");
+          tbody.innerHTML = "";
+          
+          let totalCapital = 0;
+          let totalInterets = 0;
+          
+          amortissement.forEach(echeance => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${echeance.mois}</td>
+              <td>${formatDate(echeance.date_echeance)}</td>
+              <td>${formatMoney(echeance.capital)}</td>
+              <td>${formatMoney(echeance.interets)}</td>
+              <td>${formatMoney(echeance.mensualite)}</td>
+              <td>${formatMoney(echeance.capital_restant)}</td>
+              <td><span class="status-badge status-${echeance.statut.toLowerCase().replace('é', 'e')}">${echeance.statut}</span></td>
+            `;
+            tbody.appendChild(tr);
+            
+            if (echeance.statut === 'payé') {
+              totalCapital += parseFloat(echeance.capital);
+              totalInterets += parseFloat(echeance.interets);
+            }
+          });
+          
+          // Mettre à jour le résumé
+          document.getElementById('total-rembourse').textContent = formatMoney(totalCapital + totalInterets);
+          document.getElementById('total-interets').textContent = formatMoney(totalInterets);
+          
+          // Calculer le reste à payer (simplifié)
+          fetch(`${apiBase}/prets/${pretId}`)
+            .then(response => response.json())
+            .then(pret => {
+              const totalPret = parseFloat(pret.montant);
+              const capitalRembourse = totalCapital;
+              const capitalRestant = totalPret - capitalRembourse;
+              document.getElementById('reste-a-payer').textContent = formatMoney(capitalRestant);
+            });
+        });
+    }
+    
+    // Fonction pour exporter en PDF
+    document.getElementById('exportPdf').addEventListener('click', function() {
+      const element = document.querySelector('.main-content');
+      const opt = {
+        margin: 10,
+        filename: `pret_${pretId}_${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      // Temporairement masquer le bouton d'export
+      const exportBtn = document.getElementById('exportPdf');
+      exportBtn.style.visibility = 'hidden';
+      
+      html2canvas(element, {
+        scale: 2,
+        logging: true,
+        useCORS: true
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 295; // A4 height in mm
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+        
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+        
+        pdf.save(opt.filename);
+        exportBtn.style.visibility = 'visible';
+      });
+    });
+    
+    // Charger les données au démarrage
+    document.addEventListener('DOMContentLoaded', chargerDetailsPret);
+  </script>
+</body>
+</html>

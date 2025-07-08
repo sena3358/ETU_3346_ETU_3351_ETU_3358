@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Remboursements - Établissement Financier</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="ws/assets/bootstrap5/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="assets/fontawesome/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34495e;
+      --accent-color: #3498db;
+      --success-color: #28a745;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+    }
+    
+    .sidebar {
+      background-color: var(--primary-color);
+      color: white;
+      height: 100vh;
+      position: fixed;
+      padding-top: 1rem;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-brand {
+      font-weight: 600;
+      font-size: 1.25rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 1rem;
+    }
+    
+    .nav-link {
+      color: rgba(255,255,255,0.8);
+      border-radius: 0.25rem;
+      margin: 0.25rem 1rem;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      color: white;
+      background-color: var(--secondary-color);
+    }
+    
+    .nav-link i {
+      width: 1.5rem;
+      text-align: center;
+      margin-right: 0.5rem;
+    }
+    
+    .main-content {
+      margin-left: 250px;
+      padding: 2rem;
+    }
+    
+    .card {
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+      margin-bottom: 1.5rem;
+      border: none;
+    }
+    
+    .card-header {
+      background-color: white;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-weight: 600;
+      padding: 1rem 1.5rem;
+    }
+    
+    .form-control, .btn {
+      border-radius: 0.375rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+    
+    .btn-success {
+      background-color: var(--success-color);
+      border-color: var(--success-color);
+    }
+    
+    .table {
+      margin-top: 1.5rem;
+    }
+    
+    .table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+    
+    .total-row {
+      background-color: #f8f9fa !important;
+      font-weight: 600;
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 400px;
+      margin-top: 2rem;
+    }
+    
+    .date-filter {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar d-flex flex-column flex-shrink-0 p-3" style="width: 250px;">
+    <div class="sidebar-brand">
+      <i class="fas fa-university me-2"></i>
+      Établissement Financier
+    </div>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item">
+        <a href="#" class="nav-link">
+          <i class="fas fa-home"></i>
+          Accueil
+        </a>
+      </li>
+      <li>
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-coins"></i>
+          Gestion des Fonds
+        </a>
+      </li>
+      <li>
+        <a href="types_pret.html" class="nav-link">
+          <i class="fas fa-list-alt"></i>
+          Types de prêts
+        </a>
+      </li>
+      <li>
+        <a href="pret.html" class="nav-link">
+          <i class="fas fa-hand-holding-usd"></i>
+          Prêts
+        </a>
+      </li>
+      <li>
+        <a href="remboursement.html" class="nav-link active">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Remboursements
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+          <i class="fas fa-file-invoice-dollar me-2"></i>Gestion des Remboursements
+        </h1>
+      </div>
+      
+      <!-- Filtres par date -->
+      <div class="card">
+        <div class="card-header">
+          <span>Filtrer par période</span>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="dateDebut" class="form-label">Date de début</label>
+              <input type="date" class="form-control" id="dateDebut">
+            </div>
+            <div class="col-md-4">
+              <label for="dateFin" class="form-label">Date de fin</label>
+              <input type="date" class="form-control" id="dateFin">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <button onclick="sommeInteretsEntreDate()" class="btn btn-primary me-2">
+                <i class="fas fa-calculator me-2"></i>Calculer
+              </button>
+              <button onclick="getDatesDuPremierEntre()" class="btn btn-success">
+                <i class="fas fa-list me-2"></i>Toutes les dates
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tableau des résultats -->
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>Détails des remboursements</span>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover" id="resultats-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Date</th>
+                  <th>Intérêts</th>
+                  <th>Client</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Graphique -->
+      <div class="card">
+        <div class="card-header">
+          <span>Visualisation des intérêts</span>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="graphInterets"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle with Popper -->
+  <script src="ws/assets/bootstrap5/dist//js/bootstrap.bundle.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
+    let chart = null; // Variable pour stocker le graphique
+
+    function ajax(method, url, data, callback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, apiBase + url, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          callback(JSON.parse(xhr.responseText));
+        }
+      };
+      xhr.send(data);
+    }
+
+    function sommeInteretsEntreDate() {
+      const dateDebut = document.getElementById("dateDebut").value;
+      const dateFin = document.getElementById("dateFin").value;
+
+      if (!dateDebut || !dateFin) {
+        alert("Veuillez saisir les deux dates.");
+        return;
+      }
+
+      ajax("GET", `/remboursements/datesDuPremierEntre/${dateDebut}/${dateFin}`, null, (dates) => {
+        const tbody = document.querySelector("#resultats-table tbody");
+        tbody.innerHTML = ""; // Vider le tableau avant affichage
+        
+        const chartData = {
+          labels: [],
+          datasets: [{
+            label: 'Somme des intérêts par date',
+            data: [],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        };
+
+        let datesProcessed = 0;
+        
+        for (const date of dates) {
+          // 1. Affiche les remboursements pour chaque date
+          ajax("GET", `/remboursements/parDate/${date}`, null, (data) => {
+            data.forEach(r => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td>${r.id_remboursement}</td>
+                <td>${r.date_paiement}</td>
+                <td>${parseFloat(r.interet).toFixed(2)} Ar</td>
+                <td>${r.nom} ${r.prenom}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+
+            // 2. Ensuite affiche la somme des intérêts pour cette date
+            ajax("GET", `/remboursements/sommeInterets/${date}`, null, (somme) => {
+              const trSomme = document.createElement("tr");
+              trSomme.classList.add("total-row");
+              trSomme.innerHTML = `
+                <td colspan="2">Total intérêts pour ${date}</td>
+                <td>${parseFloat(somme).toFixed(2)} Ar</td>
+                <td></td>
+              `;
+              tbody.appendChild(trSomme);
+
+              // Ajouter les données pour le graphique
+              chartData.labels.push(date);
+              chartData.datasets[0].data.push(parseFloat(somme));
+              
+              datesProcessed++;
+              
+              // Quand toutes les dates sont traitées, mettre à jour le graphique
+              if (datesProcessed === dates.length) {
+                updateChart(chartData);
+              }
+            });
+          });
+        }
+      });
+    }
+
+    function getDatesDuPremierEntre() {
+      // Réinitialiser les dates de filtre
+      document.getElementById("dateDebut").value = "";
+      document.getElementById("dateFin").value = "";
+      
+      ajax("GET", "/remboursements/datesDuPremierEntre", null, (dates) => {
+        const tbody = document.querySelector("#resultats-table tbody");
+        tbody.innerHTML = "";
+        
+        const chartData = {
+          labels: [],
+          datasets: [{
+            label: 'Somme des intérêts par date',
+            data: [],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        };
+
+        let datesProcessed = 0;
+        
+        for (const date of dates) {
+          // 1. Affiche les remboursements pour chaque date
+          ajax("GET", `/remboursements/parDate/${date}`, null, (data) => {
+            data.forEach(r => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td>${r.id_remboursement}</td>
+                <td>${r.date_paiement}</td>
+                <td>${parseFloat(r.interet).toFixed(2)} Ar</td>
+                <td>${r.nom} ${r.prenom}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+
+            // 2. Ensuite affiche la somme des intérêts pour cette date
+            ajax("GET", `/remboursements/sommeInterets/${date}`, null, (somme) => {
+              const trSomme = document.createElement("tr");
+              trSomme.classList.add("total-row");
+              trSomme.innerHTML = `
+                <td colspan="2">Total intérêts pour ${date}</td>
+                <td>${parseFloat(somme).toFixed(2)} Ar</td>
+                <td></td>
+              `;
+              tbody.appendChild(trSomme);
+
+              // Ajouter les données pour le graphique
+              chartData.labels.push(date);
+              chartData.datasets[0].data.push(parseFloat(somme));
+              
+              datesProcessed++;
+              
+              // Quand toutes les dates sont traitées, mettre à jour le graphique
+              if (datesProcessed === dates.length) {
+                updateChart(chartData);
+              }
+            });
+          });
+        }
+      });
+    }
+
+    function updateChart(chartData) {
+      const ctx = document.getElementById('graphInterets').getContext('2d');
+      
+      // Trier les données par date
+      const sortedData = chartData.labels.map((date, index) => ({
+        date: new Date(date),
+        value: chartData.datasets[0].data[index]
+      })).sort((a, b) => a.date - b.date);
+      
+      const sortedLabels = sortedData.map(item => item.date.toISOString().split('T')[0]);
+      const sortedValues = sortedData.map(item => item.value);
+      
+      if (chart) {
+        chart.destroy(); // Détruire l'ancien graphique s'il existe
+      }
+      
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: sortedLabels,
+          datasets: [{
+            label: chartData.datasets[0].label,
+            data: sortedValues,
+            backgroundColor: chartData.datasets[0].backgroundColor,
+            borderColor: chartData.datasets[0].borderColor,
+            borderWidth: chartData.datasets[0].borderWidth
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Montant (Ar)'
+              },
+              ticks: {
+                callback: function(value) {
+                  return value.toLocaleString('fr-FR') + ' Ar';
+                }
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Date de paiement'
+              }
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.parsed.y.toLocaleString('fr-FR') + ' Ar';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Définir la date d'aujourd'hui comme date de fin par défaut
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('dateFin').value = today;
+      
+      // Charger toutes les données au démarrage
+      getDatesDuPremierEntre();
+    });
+  </script>
+</body>
+</html>
