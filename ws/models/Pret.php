@@ -77,18 +77,12 @@ class Pret {
     public static function create($data) {
         $db = getDB();
 
-        // Vérification fonds disponibles
-        $fonds = $db->query("SELECT SUM(montantTotal) AS total FROM fondTotal")->fetch()['total'];
-        
-        if ($data->montant > $fonds) {
-            throw new Exception("Fonds insuffisants pour accorder ce prêt. Disponible : " . number_format($fonds, 2) . " Ar.");
-        }
-
-        $stmt = $db->prepare("INSERT INTO pret (id_utilisateur, id_type_pret, montant, taux, duree, date_debut, statut) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-        // Tu fixes le statut à 'en cours' ici dans les valeurs
-        $statut = 'en cours';
+        $stmt = $db->prepare("
+            INSERT INTO pret (
+                id_utilisateur, id_type_pret, montant, taux, duree,
+                assurance, delai_grace, date_debut, statut
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'en attente')
+        ");
 
         $stmt->execute([
             $data->id_utilisateur,
@@ -96,8 +90,9 @@ class Pret {
             $data->montant,
             $data->taux,
             $data->duree,
-            $data->date_debut,
-            $statut
+            $data->assurance ?? 0,
+            $data->delai_grace ?? 0,
+            $data->date_debut
         ]);
 
         return $db->lastInsertId();

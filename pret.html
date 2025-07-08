@@ -273,6 +273,16 @@
                 </div>
                 <div class="row">
                   <div class="col-md-6 mb-3">
+                    <label for="duree" class="form-label">Assurance</label>
+                    <input type="number" class="form-control" id="assurance" placeholder="Assurance" required>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="date_debut" class="form-label">Delai grace</label>
+                    <input type="number" class="form-control" id="delai_grace" required>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
                     <label for="duree" class="form-label">Durée (mois)</label>
                     <input type="number" class="form-control" id="duree" placeholder="Durée" required>
                   </div>
@@ -310,6 +320,8 @@
                       <th>Type</th>
                       <th>Montant</th>
                       <th>Taux</th>
+                      <th>Assurance</th>
+                      <th>1er remboursement</th>
                       <th>Durée</th>
                       <th>Date</th>
                       <th>Statut</th>
@@ -330,7 +342,7 @@
   <script src="ws/assets/bootstrap5/dist/js/bootstrap.bundle.min.js"></script>
   
   <script>
-    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
+    const apiBase = "http://localhost/ETU_3346_ETU_3351_ETU_3358/ws";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -365,33 +377,25 @@
     }
 
     function creerPret() {
-      const id = document.getElementById("id").value;
       const id_utilisateur = document.getElementById("client").value;
       const id_type_pret = document.getElementById("type_pret").value;
       const taux = document.querySelector(`#type_pret option:checked`).dataset.taux;
       const montant = document.getElementById("montant").value;
       const duree = document.getElementById("duree").value;
       const date_debut = document.getElementById("date_debut").value;
+      const assurance = document.getElementById("assurance").value || 0;
+      const delai_grace = document.getElementById("delai_grace").value || 0;
 
-      if (!id_utilisateur || !id_type_pret || !montant || !duree || !date_debut) {
-        alert("Veuillez remplir tous les champs obligatoires");
-        return;
-      }
+      const data = 
+      `id_utilisateur=${id_utilisateur}&id_type_pret=${id_type_pret}&taux=${taux}&montant=${montant}` +
+      `&duree=${duree}&date_debut=${date_debut}&assurance=${assurance}&delai_grace=${delai_grace}`;
 
-      const data = `id_utilisateur=${encodeURIComponent(id_utilisateur)}&id_type_pret=${encodeURIComponent(id_type_pret)}&taux=${encodeURIComponent(taux)}&montant=${encodeURIComponent(montant)}&duree=${encodeURIComponent(duree)}&date_debut=${encodeURIComponent(date_debut)}`;
-
-      if (id) {
-        ajax("PUT", `/pret/${id}`, data, () => {
-          resetForm();
-          chargerPrets();
-        });
-      } else {
-        ajax("POST", "/pret", data, () => {
-          resetForm();
-          chargerPrets();
-        });
-      }
+      ajax("POST", "/pret", data, () => {
+      alert("Prêt enregistré avec succès !");
+      chargerPrets();
+      });
     }
+
 
     function chargerPrets() {
       ajax("GET", "/pret", null, (data) => {
@@ -405,6 +409,8 @@
             <td>${p.nom_type}</td>
             <td>${parseFloat(p.montant).toFixed(2)} Ar</td>
             <td>${p.taux}%</td>
+            <td>${p.assurance}%</td>
+            <td>${p.delai_grace} eme mois</td>
             <td>${p.duree} mois</td>
             <td>${p.date_debut}</td>
             <td><span class="status-badge status-${p.statut.toLowerCase().replace('é', 'e')}">${p.statut}</span></td>
