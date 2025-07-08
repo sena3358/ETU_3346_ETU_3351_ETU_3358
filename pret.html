@@ -199,7 +199,7 @@
     </div>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
-        <a href="index.html" class="nav-link">
+        <a href="liste_pret.html" class="nav-link">
           <i class="fas fa-home"></i>
           Accueil
         </a>
@@ -220,6 +220,12 @@
         <a href="pret.html" class="nav-link active">
           <i class="fas fa-hand-holding-usd"></i>
           Prêts
+        </a>
+      </li>
+      <li>
+        <a href="liste_pret.html" class="nav-link active">
+          <i class="fas fa-list-check"></i>
+          Validation Prêts
         </a>
       </li>
       <li>
@@ -301,12 +307,17 @@
           <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
               <span>Liste des prêts</span>
-              <button type="button" onclick="chargerPrets()" class="btn btn-sm btn-outline-secondary">
-                <i class="fas fa-sync-alt"></i>
-              </button>
+              <div>
+                <a href="list_pret_enc.html" class="btn btn-sm btn-primary me-2">
+                  <i class="fas fa-list-check me-1"></i>Prêts en cours
+                </a>
+                <button type="button" onclick="chargerPrets()" class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
             </div>
             <div class="card-body">
-              <div class="table">
+              <div class="table table-responsive">
                 <table class="table table-hover" id="table-prets">
                   <thead>
                     <tr>
@@ -337,7 +348,7 @@
   <script src="ws/assets/bootstrap5/dist/js/bootstrap.bundle.min.js"></script>
   
   <script>
-    const apiBase = "http://localhost/ETU_3346_ETU_3351_ETU_3358/ws";
+    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();

@@ -116,6 +116,12 @@ class Pret {
         ]);
     }
 
+    public static function updateStatus($id, $statut) {
+        $db = getDB();
+        $stmt = $db->prepare("UPDATE pret SET statut = ? WHERE id = ?");
+        return $stmt->execute([$statut, $id]);
+    }
+
     public static function delete($id) {
         $db = getDB();
         $stmt = $db->prepare("DELETE FROM pret WHERE id = ?");

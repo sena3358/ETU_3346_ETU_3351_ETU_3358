@@ -29,6 +29,28 @@ class PretController {
         Flight::json($amortissement);
     }
 
+    public static function validate($id) {
+        try {
+            // Vérifier d'abord que le prêt est bien en attente
+            $pret = Pret::getById($id);
+            if (!$pret || $pret['statut'] !== 'en attente') {
+                Flight::halt(400, 'Seuls les prêts en attente peuvent être validés');
+            }
+
+            // Mettre à jour le statut
+            Pret::updateStatus($id, 'en cours');
+            
+            // Mettre à jour les fonds disponibles (si nécessaire)
+            // $fonds = $db->query("SELECT montantTotal FROM fondTotal")->fetch()['montantTotal'];
+            // $nouveauMontant = $fonds - $pret['montant'];
+            // $db->query("UPDATE fondTotal SET montantTotal = $nouveauMontant");
+
+            Flight::json(['success' => true]);
+        } catch (Exception $e) {
+            Flight::halt(500, 'Erreur serveur: ' . $e->getMessage());
+        }
+    }
+
     // Créer un nouveau prêt
     public static function create() {
         $data = Flight::request()->data;

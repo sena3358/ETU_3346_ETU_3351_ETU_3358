@@ -138,7 +138,7 @@
     </div>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
-        <a href="index.html" class="nav-link">
+        <a href="liste_pret.html" class="nav-link">
           <i class="fas fa-home"></i>
           Accueil
         </a>
@@ -159,6 +159,12 @@
         <a href="pret.html" class="nav-link">
           <i class="fas fa-hand-holding-usd"></i>
           Prêts
+        </a>
+      </li>
+      <li>
+        <a href="liste_pret.html" class="nav-link active">
+          <i class="fas fa-list-check"></i>
+          Validation Prêts
         </a>
       </li>
       <li>
@@ -242,7 +248,7 @@
   <script src="ws/assets/bootstrap5/dist/js/bootstrap.bundle.min.js"></script>
   
   <script>
-    const apiBase = "http://localhost/ETU_3346_ETU_3351_ETU_3358/ws";
+    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();

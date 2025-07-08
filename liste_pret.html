@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des Prêts - Établissement Financier</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="ws/assets/bootstrap5/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="assets/fontawesome/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: white;
+      --secondary-color: white;
+      ---accent-color: #000768;
+      --success-color: #054314;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+    }
+    
+    .sidebar {
+      background-color: var(--primary-color);
+      color: black;
+      height: 100vh;
+      position: fixed;
+      padding-top: 1rem;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-brand {
+      font-weight: 600;
+      font-size: 1.25rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 1rem;
+    }
+    
+    .nav-link {
+      color: black;
+      border-radius: 0.25rem;
+      margin: 0.25rem 1rem;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      color: #848484;
+      background-color: rgb(211, 211, 211);
+    }
+
+    .nav-link.active {
+      background-color: #000768;
+    }
+    
+    .nav-link i {
+      width: 1.5rem;
+      text-align: center;
+      margin-right: 0.5rem;
+    }
+    
+    .main-content {
+      margin-left: 250px;
+      padding: 2rem;
+    }
+    
+    .card {
+      border-radius: 0.5rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+      margin-bottom: 1.5rem;
+      border: none;
+    }
+    
+    .card-header {
+      background-color: white;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-weight: 600;
+      padding: 1rem 1.5rem;
+    }
+    
+    .form-control, .btn {
+      border-radius: 0.375rem;
+    }
+    
+    .table {
+      margin-top: 1.5rem;
+    }
+    
+    .table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+    
+    .status-badge {
+      padding: 0.35rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .status-en_cours {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+    
+    .status-en_attente {
+      background-color: #fff8e1;
+      color: #ff8f00;
+    }
+    
+    .status-termine {
+      background-color: #e8f5e9;
+      color: #388e3c;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+    
+    .filter-section {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .badge-filter {
+      cursor: pointer;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .badge-filter.active {
+      background-color: var(--accent-color);
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar d-flex flex-column flex-shrink-0 p-3" style="width: 250px;">
+    <div class="sidebar-brand">
+      <i class="fas fa-university me-2"></i>
+      Établissement Financier
+    </div>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li>
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-coins"></i>
+          Gestion des Fonds
+        </a>
+      </li>
+      <li>
+        <a href="types_pret.html" class="nav-link">
+          <i class="fas fa-list-alt"></i>
+          Types de prêts
+        </a>
+      </li>
+      <li>
+        <a href="pret.html" class="nav-link">
+          <i class="fas fa-hand-holding-usd"></i>
+          Prêts
+        </a>
+      </li>
+      <li>
+        <a href="liste_pret.html" class="nav-link active">
+          <i class="fas fa-list-check"></i>
+          Validation Prêts
+        </a>
+      </li>
+      <li>
+        <a href="remboursement.html" class="nav-link">
+          <i class="fas fa-file-invoice-dollar"></i>
+          Remboursements
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+          <i class="fas fa-list-check me-2"></i>Validation des Prêts
+        </h1>
+        <button type="button" onclick="chargerPrets()" class="btn btn-sm btn-outline-secondary">
+          <i class="fas fa-sync-alt"></i> Actualiser
+        </button>
+      </div>
+      
+      <!-- Filtres multicritères -->
+      <div class="card">
+        <div class="card-header">
+          <span>Filtres</span>
+        </div>
+        <div class="card-body">
+          <div class="filter-section">
+            <div class="filter-row">
+              <div class="filter-group">
+                <label class="form-label">Statut</label>
+                <div>
+                  <span class="badge badge-filter bg-secondary active" data-statut="all">Tous</span>
+                  <span class="badge badge-filter bg-warning text-dark" data-statut="en_attente">En attente</span>
+                  <span class="badge badge-filter bg-primary" data-statut="en_cours">En cours</span>
+                </div>
+              </div>
+              <div class="filter-group">
+                <label for="filter-type" class="form-label">Type de prêt</label>
+                <select class="form-select" id="filter-type">
+                  <option value="">Tous les types</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="filter-client" class="form-label">Client</label>
+                <input type="text" class="form-control" id="filter-client" placeholder="Rechercher un client...">
+              </div>
+            </div>
+            <div class="filter-row">
+              <div class="filter-group">
+                <label for="filter-montant-min" class="form-label">Montant (min)</label>
+                <input type="number" class="form-control" id="filter-montant-min" placeholder="Montant minimum">
+              </div>
+              <div class="filter-group">
+                <label for="filter-montant-max" class="form-label">Montant (max)</label>
+                <input type="number" class="form-control" id="filter-montant-max" placeholder="Montant maximum">
+              </div>
+              <div class="filter-group">
+                <label for="filter-date" class="form-label">Date</label>
+                <input type="date" class="form-control" id="filter-date">
+              </div>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="appliquerFiltres()">
+              <i class="fas fa-filter me-1"></i> Appliquer les filtres
+            </button>
+            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="reinitialiserFiltres()">
+              <i class="fas fa-times me-1"></i> Réinitialiser
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Liste des prêts -->
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>Liste des prêts</span>
+          <div>
+            <span class="me-2">Total: <span id="total-prets">0</span></span>
+            <span class="me-2">En attente: <span id="total-attente">0</span></span>
+            <span>En cours: <span id="total-cours">0</span></span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover" id="table-prets">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Client</th>
+                  <th>Type</th>
+                  <th>Montant</th>
+                  <th>Taux</th>
+                  <th>Durée</th>
+                  <th>Date</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle with Popper -->
+  <script src="ws/assets/bootstrap5/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
+    let allPrets = [];
+    let filteredPrets = [];
+
+    function ajax(method, url, data, callback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, apiBase + url, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          callback(JSON.parse(xhr.responseText));
+        }
+      };
+      xhr.send(data);
+    }
+
+    function chargerTypesPret() {
+      ajax("GET", "/types_pret", null, (data) => {
+        const select = document.getElementById("filter-type");
+        select.innerHTML = "<option value=''>Tous les types</option>";
+        data.forEach(t => {
+          select.innerHTML += `<option value="${t.id}">${t.nom}</option>`;
+        });
+      });
+    }
+
+    function chargerPrets() {
+      ajax("GET", "/pret", null, (data) => {
+        allPrets = data;
+        appliquerFiltres();
+        updateCounters();
+      });
+    }
+
+    function validerPret(id) {
+        if (confirm("Voulez-vous vraiment valider ce prêt ? Cette action est irréversible.")) {
+            fetch(`${apiBase}/prets/${id}/validate`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur lors de la validation');
+                return response.json();
+            })
+            .then(data => {
+                showToast("Prêt validé avec succès", "success");
+                // Recharger les prêts après 1 seconde
+                setTimeout(chargerPrets, 1000);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showToast(error.message, "danger");
+            });
+        }
+    }
+
+    function appliquerFiltres() {
+      const statut = document.querySelector(".badge-filter.active[data-statut]")?.dataset.statut;
+      const type = document.getElementById("filter-type").value;
+      const client = document.getElementById("filter-client").value.toLowerCase();
+      const montantMin = parseFloat(document.getElementById("filter-montant-min").value) || 0;
+      const montantMax = parseFloat(document.getElementById("filter-montant-max").value) || Infinity;
+      const date = document.getElementById("filter-date").value;
+      
+      filteredPrets = allPrets.filter(pret => {
+        // Filtre par statut
+        if (statut && statut !== "all") {
+          if (statut === "en_attente" && pret.statut !== "en attente") return false;
+          if (statut === "en_cours" && pret.statut !== "en cours") return false;
+        }
+        
+        // Filtre par type
+        if (type && pret.id_type_pret != type) return false;
+        
+        // Filtre par client
+        if (client && !(pret.nom_client.toLowerCase().includes(client) || pret.prenom_client.toLowerCase().includes(client))) {
+          return false;
+        }
+        
+        // Filtre par montant
+        const montant = parseFloat(pret.montant);
+        if (montant < montantMin || montant > montantMax) return false;
+        
+        // Filtre par date
+        if (date && pret.date_debut !== date) return false;
+        
+        return true;
+      });
+      
+      afficherPrets();
+    }
+
+    function reinitialiserFiltres() {
+      document.querySelectorAll(".badge-filter").forEach(badge => {
+        badge.classList.remove("active");
+        if (badge.dataset.statut === "all") badge.classList.add("active");
+      });
+      
+      document.getElementById("filter-type").value = "";
+      document.getElementById("filter-client").value = "";
+      document.getElementById("filter-montant-min").value = "";
+      document.getElementById("filter-montant-max").value = "";
+      document.getElementById("filter-date").value = "";
+      
+      appliquerFiltres();
+    }
+
+    function afficherPrets() {
+      const tbody = document.querySelector("#table-prets tbody");
+      tbody.innerHTML = "";
+      
+      filteredPrets.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.nom_client} ${p.prenom_client}</td>
+          <td>${p.nom_type}</td>
+          <td>${parseFloat(p.montant).toFixed(2)} Ar</td>
+          <td>${p.taux}%</td>
+          <td>${p.duree} mois</td>
+          <td>${p.date_debut}</td>
+          <td><span class="status-badge status-${p.statut.toLowerCase().replace('é', 'e').replace(' ', '_')}">${p.statut}</span></td>
+          <td>
+            <a href="details_pret.html?id=${p.id}" class="btn btn-sm btn-outline-primary me-1">
+              <i class="fas fa-eye"></i>
+            </a>
+            ${p.statut === "en attente" ? `
+              <button class="btn btn-sm btn-success" onclick="validerPret(${p.id})">
+                <i class="fas fa-check"></i> Valider
+              </button>
+            ` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateCounters() {
+      document.getElementById("total-prets").textContent = allPrets.length;
+      document.getElementById("total-attente").textContent = allPrets.filter(p => p.statut === "en attente").length;
+      document.getElementById("total-cours").textContent = allPrets.filter(p => p.statut === "en cours").length;
+    }
+
+    function showToast(message, type = "success") {
+      const toast = document.createElement("div");
+      toast.className = `position-fixed bottom-0 end-0 p-3`;
+      toast.style.zIndex = "11";
+      
+      toast.innerHTML = `
+        <div class="toast align-items-center text-white bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // Gestion des filtres par badge
+    document.querySelectorAll(".badge-filter").forEach(badge => {
+      badge.addEventListener("click", function() {
+        document.querySelectorAll(".badge-filter").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+        appliquerFiltres();
+      });
+    });
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function() {
+      chargerTypesPret();
+      chargerPrets();
+      
+      // Écouteurs pour les filtres
+      document.getElementById("filter-type").addEventListener("change", appliquerFiltres);
+      document.getElementById("filter-client").addEventListener("input", appliquerFiltres);
+      document.getElementById("filter-montant-min").addEventListener("input", appliquerFiltres);
+      document.getElementById("filter-montant-max").addEventListener("input", appliquerFiltres);
+      document.getElementById("filter-date").addEventListener("change", appliquerFiltres);
+    });
+  </script>
+</body>
+</html>
