@@ -20,4 +20,4 @@ Flight::route('GET /prets/@id/amortissement', ['PretController', 'getAmortisseme
 Flight::route('POST /prets', ['PretController', 'create']);
 Flight::route('PUT /prets/@id', ['PretController', 'update']);
 Flight::route('DELETE /prets/@id', ['PretController', 'delete']);
-Flight::route('PUT /prets/@id/validate', ['PretController', 'validate']);
+Flight::route('PUT /prets/@id/validate', ['PretController', 'validerPret']);
