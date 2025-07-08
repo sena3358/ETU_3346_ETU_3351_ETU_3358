@@ -198,7 +198,7 @@
       <li>
         <a href="liste_pret.html" class="nav-link">
           <i class="fas fa-list-check"></i>
-          Simulation
+          Validation Prêts
         </a>
       </li>
       <li>
@@ -232,7 +232,7 @@
       <div class="card">
         <div class="card-header">
           <span>Informations du prêt</span>
-          <span id="pret-statut" class="status-badge status-en_cours"></span>
+          <span id="pret-statut" class="status-badge status-en_cours">En cours</span>
         </div>
         <div class="card-body">
           <div class="row">
@@ -438,9 +438,7 @@
               <td>${formatMoney(echeance.mensualite)}</td>
               <td>${formatMoney(echeance.capital_restant)}</td>
               <td><span class="status-badge status-${echeance.statut.toLowerCase().replace('é', 'e')}">${echeance.statut}</span></td>
-              
             `;
-            document.getElementById('pret-statut').textContent = echeance.statut;
             tbody.appendChild(tr);
             
             if (echeance.statut === 'payé') {
