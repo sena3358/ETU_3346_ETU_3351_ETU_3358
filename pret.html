@@ -351,6 +351,7 @@
 
     const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
     
+    // const apiBase = "http://localhost/Finance/ETU_3346_ETU_3351_ETU_3358/ws";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -414,7 +415,7 @@
           tr.innerHTML = `
             <td>${p.id}</td>
             <td>${p.nom_client}</td>
-            <td>${p.nom_type}</td>
+            <td>${p.type_pret}</td>
             <td>${parseFloat(p.montant).toFixed(2)} Ar</td>
             <td>${p.taux}%</td>
             <td>${p.assurance}%</td>

@@ -13,19 +13,24 @@ class Pret {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getById($id) {
-        $db = getDB();
-        $stmt = $db->prepare("
-            SELECT p.*, u.nom AS nom_client, u.prenom AS prenom_client, t.nom AS type_pret, t.taux_interet AS taux_type
-            FROM pret p
-            JOIN utilisateur u ON p.id_utilisateur = u.id
-            JOIN type_pret t ON p.id_type_pret = t.id
-            WHERE p.id = ?
-        ");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-    
+   public static function getById($id) {
+    $db = getDB();
+    $stmt = $db->prepare("
+        SELECT 
+            p.*, 
+            u.nom AS nom_client, 
+            u.prenom AS prenom_client, 
+            t.nom AS type_pret, 
+            t.taux_interet AS taux_type
+        FROM pret p
+        JOIN utilisateur u ON p.id_utilisateur = u.id
+        JOIN type_pret t ON p.id_type_pret = t.id
+        WHERE p.id = ?
+    ");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
     public static function getAmortissement($pretId) {
         $db = getDB();
         
@@ -42,7 +47,16 @@ class Pret {
         
         $amortissement = [];
         $capitalRestant = $montant;
+        
         $dateDebut = new DateTime($pret['date_debut']);
+        $delaiGrace = (int) $pret['delai_grace']; // Assure que c'est bien un entier
+
+        // Ajouter le délai de grâce en mois
+        if ($delaiGrace > 0) {
+            $interval = new DateInterval("P{$delaiGrace}M");
+            $dateDebut->add($interval);
+        }
+
         
         for ($mois = 1; $mois <= $duree; $mois++) {
             $interets = $capitalRestant * $tauxMensuel;
