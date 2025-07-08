@@ -65,6 +65,7 @@ class Remboursement {
         return $stmt->fetch(PDO::FETCH_ASSOC)['date_fin'];
     }
 
+
 public static function getTotalInterets($dateDebut, $dateFin) {
     $db = getDB();
     $stmt = $db->query("SELECT SUM(interet) AS total_interet FROM remboursement WHERE date_debut BETWEEN ? AND ?");
@@ -118,5 +119,23 @@ public static function getRemboursementsAvecNomParDate($date) {
         $stmt = $db->prepare("DELETE FROM remboursement WHERE id = ?");
         $stmt->execute([$id]);
     }
+    public static function insererAmortissementDansRemboursement($pretId) {
+    $db = getDB();
+    
+    $amortissements = Pret::getAmortissement($pretId);
+    if (!$amortissements) return;
+
+    $stmt = $db->prepare("INSERT INTO remboursement (id_pret, date_paiement, amortissement, interet) VALUES (?, ?, ?, ?)");
+
+    foreach ($amortissements as $a) {
+        $stmt->execute([
+            $pretId,
+            $a['date_echeance'],
+            $a['capital'],
+            $a['interets']
+        ]);
+    }
+}
+
    
 }
