@@ -137,12 +137,6 @@
       Établissement Financier
     </div>
     <ul class="nav nav-pills flex-column mb-auto">
-      <li class="nav-item">
-        <a href="index.html" class="nav-link">
-          <i class="fas fa-home"></i>
-          Accueil
-        </a>
-      </li>
       <li>
         <a href="index.html" class="nav-link">
           <i class="fas fa-coins"></i>
@@ -159,6 +153,12 @@
         <a href="pret.html" class="nav-link">
           <i class="fas fa-hand-holding-usd"></i>
           Prêts
+        </a>
+      </li>
+      <li>
+        <a href="liste_pret.html" class="nav-link">
+          <i class="fas fa-list-check"></i>
+          Validation Prêts
         </a>
       </li>
       <li>
@@ -248,7 +248,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <script>
-    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
+   const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
     let chart = null; // Variable pour stocker le graphique
 
     function ajax(method, url, data, callback) {
