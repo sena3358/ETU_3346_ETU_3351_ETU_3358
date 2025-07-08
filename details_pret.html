@@ -13,8 +13,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
-          /* --primary-color: #000000;
-      --secondary-color: #000000; */
       --primary-color: white;
       --secondary-color: white;
       --accent-color: #000768;
@@ -97,16 +95,22 @@
     
     .info-group {
       margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     
     .info-label {
       font-weight: 600;
-      color: var(--primary-color);
-      margin-bottom: 0.25rem;
+      color: #6c757d;
+      margin-left: 1rem;
+      text-align: right;
     }
     
     .info-value {
       font-size: 1.1rem;
+      font-weight: 500;
+      color: #000000;
     }
     
     .table-responsive {
@@ -234,30 +238,38 @@
           <div class="row">
             <div class="col-md-6">
               <div class="info-group">
-                <div class="info-label">Client</div>
                 <div class="info-value" id="client-nom">-</div>
+                <div class="info-label">Nom du client</div>
               </div>
               <div class="info-group">
-                <div class="info-label">Type de prêt</div>
+                <div class="info-value" id="client-prenom">-</div>
+                <div class="info-label">Prénom du client</div>
+              </div>
+              <div class="info-group">
                 <div class="info-value" id="type-pret">-</div>
+                <div class="info-label">Type de prêt</div>
               </div>
               <div class="info-group">
-                <div class="info-label">Montant</div>
-                <div class="info-value" id="montant">-</div>
+                <div class="info-value"><strong id="montant">-</strong></div>
+                <div class="info-label">Capital de départ</div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="info-group">
-                <div class="info-label">Taux d'intérêt</div>
                 <div class="info-value" id="taux">-</div>
+                <div class="info-label">Taux d'intérêt</div>
               </div>
               <div class="info-group">
-                <div class="info-label">Durée</div>
+                <div class="info-value" id="assurance">-</div>
+                <div class="info-label">Assurance</div>
+              </div>
+              <div class="info-group">
                 <div class="info-value" id="duree">-</div>
+                <div class="info-label">Durée</div>
               </div>
               <div class="info-group">
-                <div class="info-label">Date de début</div>
                 <div class="info-value" id="date-debut">-</div>
+                <div class="info-label">Date de début</div>
               </div>
             </div>
           </div>
@@ -298,20 +310,20 @@
           <div class="row">
             <div class="col-md-4">
               <div class="info-group">
-                <div class="info-label">Montant total remboursé</div>
                 <div class="info-value" id="total-rembourse">-</div>
+                <div class="info-label">Montant total remboursé</div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="info-group">
-                <div class="info-label">Intérêts totaux</div>
                 <div class="info-value" id="total-interets">-</div>
+                <div class="info-label">Intérêts totaux</div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="info-group">
-                <div class="info-label">Reste à payer</div>
                 <div class="info-value" id="reste-a-payer">-</div>
+                <div class="info-label">Reste à payer</div>
               </div>
             </div>
           </div>
@@ -330,7 +342,7 @@
     // Récupération de l'ID du prêt depuis l'URL
     const urlParams = new URLSearchParams(window.location.search);
     const pretId = urlParams.get('id');
-    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
+    const apiBase = "http://localhost/Finance/ETU_3346_ETU_3351_ETU_3358/ws";
     
     // Fonction pour formater les nombres
     function formatMoney(amount) {
@@ -382,10 +394,12 @@
         })
         .then(pret => {
           // Remplir les informations de base
-          document.getElementById('client-nom').textContent = `${pret.nom_client} ${pret.prenom_client}`;
+          document.getElementById('client-nom').textContent = pret.nom_client;
+          document.getElementById('client-prenom').textContent = pret.prenom_client;
           document.getElementById('type-pret').textContent = pret.type_pret;
-          document.getElementById('montant').textContent = formatMoney(pret.montant);
+          document.getElementById('montant').innerHTML = `<strong>${formatMoney(pret.montant)}</strong>`;
           document.getElementById('taux').textContent = `${pret.taux}%`;
+          document.getElementById('assurance').textContent = `${pret.assurance}%`;
           document.getElementById('duree').textContent = `${pret.duree} mois`;
           document.getElementById('date-debut').textContent = formatDate(pret.date_debut);
           
@@ -565,6 +579,6 @@
     
     // Charger les données au démarrage
     document.addEventListener('DOMContentLoaded', chargerDetailsPret);
-</script>
+  </script>
 </body>
 </html>
