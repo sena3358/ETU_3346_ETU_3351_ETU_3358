@@ -292,7 +292,7 @@
                   <th>Intérêts</th>
                   <th>Mensualité</th>
                   <th>Capital restant</th>
-                  <th>Statut</th>
+                  <!-- <th>Statut</th> -->
                 </tr>
               </thead>
               <tbody></tbody>
@@ -437,14 +437,13 @@
               <td>${formatMoney(echeance.interets)}</td>
               <td>${formatMoney(echeance.mensualite)}</td>
               <td>${formatMoney(echeance.capital_restant)}</td>
-              <td><span class="status-badge status-${echeance.statut.toLowerCase().replace('é', 'e')}">${echeance.statut}</span></td>
+              <!-- <td><span class="status-badge status-${echeance.statut.toLowerCase().replace('é', 'e')}">${echeance.statut}</span></td> -->
             `;
             tbody.appendChild(tr);
             
-            if (echeance.statut === 'payé') {
               totalCapital += parseFloat(echeance.capital);
               totalInterets += parseFloat(echeance.interets);
-            }
+            
           });
           
           // Mettre à jour le résumé
