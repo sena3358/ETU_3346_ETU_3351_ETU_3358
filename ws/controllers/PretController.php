@@ -31,21 +31,9 @@ class PretController {
 
     // Créer un nouveau prêt
     public static function create() {
-        $dataArray = Flight::request()->query->getData(); // ou $_POST
-
-        // Juste pour debug, envoie ce que tu reçois
-        if (empty($dataArray)) {
-            Flight::halt(400, 'Aucune donnée reçue');
-        }
-
-        $data = (object) $dataArray; // converti en objet si besoin par Pret::create()
-
-        try {
-            $id = Pret::create($data);
-            Flight::json(['id' => $id]);
-        } catch (Exception $e) {
-            Flight::halt(500, 'Erreur serveur: ' . $e->getMessage());
-        }
+        $data = Flight::request()->data;
+        $id = Pret::create($data);
+        Flight::json(['id' => $id]);
     }
 
     // Modifier un prêt existant
