@@ -121,7 +121,15 @@ public static function getRemboursementsAvecNomParDate($date) {
     }
     public static function insererAmortissementDansRemboursement($pretId) {
     $db = getDB();
-    
+
+    $check = $db->prepare("SELECT COUNT(*) FROM remboursement WHERE id_pret = ?");
+    $check->execute([$pretId]);
+    $count = $check->fetchColumn();
+
+    if ($count > 0) {
+        Flight::halt(400, "Le remboursement pour ce prêt a déjà été généré.");
+    }
+    else {
     $amortissements = Pret::getAmortissement($pretId);
     if (!$amortissements) return;
 
@@ -134,6 +142,8 @@ public static function getRemboursementsAvecNomParDate($date) {
             $a['capital'],
             $a['interets']
         ]);
+    }
+
     }
 }
 
