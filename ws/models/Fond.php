@@ -37,7 +37,7 @@ class Fond {
 
     public static function getTotalFond() {
         $db = getDB();
-        $stmt = $db->query("SELECT montantTotal FROM fondTotal WHERE id = 2");
+        $stmt = $db->query("SELECT montantTotal FROM fondTotal WHERE id = 1");
         return $stmt->fetchColumn();
     }
 }

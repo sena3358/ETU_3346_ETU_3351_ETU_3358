@@ -35,16 +35,19 @@ CREATE TABLE type_pret (
 
 CREATE TABLE pret (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_utilisateur INT NOT NULL, -- client
+    id_utilisateur INT NOT NULL,
     id_type_pret INT NOT NULL,
     montant DECIMAL(12,2) NOT NULL,
-    taux DECIMAL(5,2) NOT NULL, -- taux appliqué
-    duree INT NOT NULL, -- en mois
+    taux DECIMAL(5,2) NOT NULL,
+    duree INT NOT NULL,
+    assurance DECIMAL(5,2) DEFAULT 0,
+    delai_grace INT DEFAULT 0,
     date_debut DATE NOT NULL,
-    statut ENUM('en cours', 'soldé', 'en retard', 'refusé') DEFAULT 'en cours',
+    statut ENUM('en attente', 'en cours', 'soldé', 'en retard', 'refusé') DEFAULT 'en attente',
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id),
     FOREIGN KEY (id_type_pret) REFERENCES type_pret(id)
 );
+
 
 CREATE TABLE remboursement (
     id INT AUTO_INCREMENT PRIMARY KEY,

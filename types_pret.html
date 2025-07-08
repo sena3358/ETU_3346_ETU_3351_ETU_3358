@@ -195,8 +195,8 @@
                 </div>
                 <div class="row">
                   <div class="col-md-6 mb-3">
-                    <label for="taux" class="form-label">Taux du type pret</label>
-                    <input type="number" step="0.01" class="form-control" id="taux_base" required>
+                    <label for="taux_interet" class="form-label">Taux du type pret</label>
+                    <input type="number" step="0.01" class="form-control" id="taux_interet" required>
                   </div>
                 </div>
                 <div class="d-grid">
@@ -225,8 +225,6 @@
                     <tr>
                       <th>Type</th>
                       <th>Taux</th>
-                      <th>Durée</th>
-                      <th>Montant</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -244,7 +242,7 @@
   <script src="ws/assets/bootstrap5/dist/js/bootstrap.bundle.min.js"></script>
   
   <script>
-    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
+    const apiBase = "http://localhost/ETU_3346_ETU_3351_ETU_3358/ws";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -261,13 +259,13 @@
     function creerTypePret() {
       const id = document.getElementById("id").value;
       const nom = document.getElementById("nom").value;
-      const taux = document.getElementById("taux").value;
+      const taux = document.getElementById("taux_interet").value;
       if (!nom || !taux) {
         alert("Veuillez remplir tous les champs obligatoires");
         return;
       }
 
-      const data = `nom=${encodeURIComponent(nom)}&taux=${encodeURIComponent(taux)}&taux_risque=${encodeURIComponent(taux_risque)}&duree_max=${encodeURIComponent(duree_max)}&montant_min=${encodeURIComponent(montant_min)}&montant_max=${encodeURIComponent(montant_max)}`;
+      const data = `nom=${encodeURIComponent(nom)}&taux_interet=${encodeURIComponent(taux)}`;
 
       if (id) {
         ajax("PUT", `/types_pret/${id}`, data, () => {
@@ -295,12 +293,6 @@
             <td>
               <span class="taux-badge">${t.taux_interet}%</span>
             </td>
-            <td>$(à définir)mois</td>
-            <td>
-              <span class="montant-range">
-                (à définir) Ar
-              </span>
-            </td>
             <td class="action-buttons">
               <button class="btn btn-sm btn-outline-primary me-1" onclick="editerTypePret(${t.id})">
                 <i class="fas fa-edit"></i>
@@ -319,7 +311,7 @@
       ajax("GET", `/types_pret/${id}`, null, (type) => {
         document.getElementById("id").value = type.id;
         document.getElementById("nom").value = type.nom;
-        document.getElementById("taux").value = type.taux;
+        document.getElementById("taux_interet").value = type.taux;
         // Scroll to form
         document.querySelector('.card-body').scrollIntoView({ behavior: 'smooth' });
       });
