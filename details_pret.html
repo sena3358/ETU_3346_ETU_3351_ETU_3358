@@ -13,8 +13,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
-      --primary-color: #2c3e50;
-      --secondary-color: #34495e;
+      --primary-color: #000000;
+      --secondary-color: #000000;
       --accent-color: #3498db;
       --success-color: #28a745;
     }
@@ -340,6 +340,28 @@
       return new Date(dateString).toLocaleDateString('fr-FR', options);
     }
     
+    // Fonction pour adapter le statut à vos valeurs ENUM
+    function formatStatut(statut) {
+      const statuts = {
+        'en cours': 'En cours',
+        'soldé': 'Soldé',
+        'en retard': 'En retard',
+        'refusé': 'Refusé'
+      };
+      return statuts[statut] || statut;
+    }
+    
+    // Fonction pour adapter la classe CSS du statut
+    function getStatutClass(statut) {
+      const classes = {
+        'en cours': 'status-en_cours',
+        'soldé': 'status-termine',
+        'en retard': 'status-en_retard',
+        'refusé': 'status-en_retard'
+      };
+      return classes[statut] || 'status-en_cours';
+    }
+    
     // Charger les détails du prêt
     function chargerDetailsPret() {
       if (!pretId) {
@@ -348,26 +370,37 @@
       }
       
       fetch(`${apiBase}/prets/${pretId}`)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) throw new Error('Prêt non trouvé');
+          return response.json();
+        })
         .then(pret => {
           // Remplir les informations de base
           document.getElementById('client-nom').textContent = `${pret.nom_client} ${pret.prenom_client}`;
-          document.getElementById('type-pret').textContent = pret.nom_type;
+          document.getElementById('type-pret').textContent = pret.type_pret;
           document.getElementById('montant').textContent = formatMoney(pret.montant);
           document.getElementById('taux').textContent = `${pret.taux}%`;
-          document.getElementById('duree').textContent = `${pret.duree_mois} mois`;
+          document.getElementById('duree').textContent = `${pret.duree} mois`;
           document.getElementById('date-debut').textContent = formatDate(pret.date_debut);
-          document.getElementById('pret-statut').textContent = pret.statut;
-          document.getElementById('pret-statut').className = `status-badge status-${pret.statut.toLowerCase().replace('é', 'e')}`;
-          document.getElementById('print-pret-id').textContent = pretId;
           
-          // Mettre à jour la date d'édition
+          const statutFormate = formatStatut(pret.statut);
+          document.getElementById('pret-statut').textContent = statutFormate;
+          document.getElementById('pret-statut').className = `status-badge ${getStatutClass(pret.statut)}`;
+          
+          document.getElementById('print-pret-id').textContent = pretId;
           document.getElementById('print-date').textContent = new Date().toLocaleDateString('fr-FR');
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          alert(error.message);
         });
       
       // Charger le tableau d'amortissement
       fetch(`${apiBase}/prets/${pretId}/amortissement`)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) throw new Error('Erreur lors du chargement du tableau d\'amortissement');
+          return response.json();
+        })
         .then(amortissement => {
           const tbody = document.querySelector("#table-amortissement tbody");
           tbody.innerHTML = "";
@@ -398,20 +431,61 @@
           document.getElementById('total-rembourse').textContent = formatMoney(totalCapital + totalInterets);
           document.getElementById('total-interets').textContent = formatMoney(totalInterets);
           
-          // Calculer le reste à payer (simplifié)
+          // Calculer le reste à payer
           fetch(`${apiBase}/prets/${pretId}`)
             .then(response => response.json())
             .then(pret => {
               const totalPret = parseFloat(pret.montant);
               const capitalRembourse = totalCapital;
               const capitalRestant = totalPret - capitalRembourse;
-              document.getElementById('reste-a-payer').textContent = formatMoney(capitalRestant);
+              document.getElementById('reste-a-payer').textContent = formatMoney(Math.max(0, capitalRestant));
             });
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          document.querySelector("#table-amortissement tbody").innerHTML = `
+            <tr>
+              <td colspan="7" class="text-center text-muted">${error.message}</td>
+            </tr>
+          `;
         });
     }
     
-    // Fonction pour exporter en PDF
+    // Fonction pour exporter en PDF avec notifications
     document.getElementById('exportPdf').addEventListener('click', function() {
+      const exportBtn = document.getElementById('exportPdf');
+      const originalHtml = exportBtn.innerHTML;
+      
+      // Créer un élément de notification
+      const notification = document.createElement('div');
+      notification.className = 'position-fixed bottom-0 end-0 p-3';
+      notification.style.zIndex = '11';
+      
+      const toast = document.createElement('div');
+      toast.className = 'toast align-items-center text-white bg-success border-0';
+      toast.setAttribute('role', 'alert');
+      toast.setAttribute('aria-live', 'assertive');
+      toast.setAttribute('aria-atomic', 'true');
+      
+      const toastBody = document.createElement('div');
+      toastBody.className = 'd-flex justify-content-center align-items-center p-2';
+      
+      notification.appendChild(toast);
+      toast.appendChild(toastBody);
+      document.body.appendChild(notification);
+      
+      // Afficher "Téléchargement en cours"
+      exportBtn.disabled = true;
+      exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Téléchargement en cours...';
+      
+      toastBody.innerHTML = `
+        <div class="spinner-border spinner-border-sm me-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <strong>Téléchargement en cours...</strong>
+      `;
+      toast.classList.add('show');
+      
       const element = document.querySelector('.main-content');
       const opt = {
         margin: 10,
@@ -421,10 +495,6 @@
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       
-      // Temporairement masquer le bouton d'export
-      const exportBtn = document.getElementById('exportPdf');
-      exportBtn.style.visibility = 'hidden';
-      
       html2canvas(element, {
         scale: 2,
         logging: true,
@@ -432,8 +502,8 @@
       }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210; // A4 width in mm
-        const pageHeight = 295; // A4 height in mm
+        const imgWidth = 210;
+        const pageHeight = 295;
         const imgHeight = canvas.height * imgWidth / canvas.width;
         let heightLeft = imgHeight;
         let position = 0;
@@ -449,12 +519,46 @@
         }
         
         pdf.save(opt.filename);
-        exportBtn.style.visibility = 'visible';
+        
+        // Afficher "Téléchargement terminé"
+        toastBody.innerHTML = `
+          <div class="me-2">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <strong>Téléchargement terminé</strong>
+        `;
+        
+        // Réinitialiser le bouton après un délai
+        setTimeout(() => {
+          exportBtn.disabled = false;
+          exportBtn.innerHTML = originalHtml;
+          setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => notification.remove(), 500);
+          }, 3000);
+        }, 500);
+      }).catch(error => {
+        console.error('Erreur lors de la génération du PDF:', error);
+        toastBody.innerHTML = `
+          <div class="me-2">
+            <i class="fas fa-times-circle"></i>
+          </div>
+          <strong>Erreur lors du téléchargement</strong>
+        `;
+        toast.classList.add('bg-danger');
+        
+        exportBtn.disabled = false;
+        exportBtn.innerHTML = originalHtml;
+        
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => notification.remove(), 500);
+        }, 3000);
       });
     });
     
     // Charger les données au démarrage
     document.addEventListener('DOMContentLoaded', chargerDetailsPret);
-  </script>
+</script>
 </body>
 </html>

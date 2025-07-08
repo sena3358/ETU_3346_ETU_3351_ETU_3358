@@ -15,7 +15,18 @@ class PretController {
     // Récupérer un prêt par son ID
     public static function getById($id) {
         $pret = Pret::getById($id);
+        if (!$pret) {
+            Flight::halt(404, 'Prêt non trouvé');
+        }
         Flight::json($pret);
+    }
+
+    public static function getAmortissement($id) {
+        $amortissement = Pret::getAmortissement($id);
+        if (!$amortissement) {
+            Flight::halt(404, 'Prêt non trouvé');
+        }
+        Flight::json($amortissement);
     }
 
     // Créer un nouveau prêt
@@ -42,8 +53,12 @@ class PretController {
         $data = Flight::request()->query->getData();
         // $data = (object)$_POST;
 
-        Pret::update($id, $data);
-        Flight::json(['id' => $id]);
+        try {
+            Pret::update($id, (object)$data);
+            Flight::json(['id' => $id]);
+        } catch (Exception $e) {
+            Flight::halt(400, $e->getMessage());
+        }
     }
 
     // Supprimer un prêt
