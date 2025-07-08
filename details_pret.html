@@ -13,10 +13,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
-      --primary-color: #000000;
-      --secondary-color: #000000;
-      --accent-color: #3498db;
-      --success-color: #28a745;
+          /* --primary-color: #000000;
+      --secondary-color: #000000; */
+      --primary-color: white;
+      --secondary-color: white;
+      --accent-color: #000768;
+      --success-color: #054314;
     }
     
     body {
@@ -26,7 +28,7 @@
     
     .sidebar {
       background-color: var(--primary-color);
-      color: white;
+      color: #000000;
       height: 100vh;
       position: fixed;
       padding-top: 1rem;
@@ -42,7 +44,7 @@
     }
     
     .nav-link {
-      color: rgba(255,255,255,0.8);
+      color: #000000;
       border-radius: 0.25rem;
       margin: 0.25rem 1rem;
       padding: 0.75rem 1rem;
@@ -50,8 +52,12 @@
     }
     
     .nav-link:hover, .nav-link.active {
-      color: white;
-      background-color: var(--secondary-color);
+      color: #848484;
+      background-color: rgb(211, 211, 211);
+    }
+
+    .nav-link.active {
+      background-color: #000768;
     }
     
     .nav-link i {
@@ -168,7 +174,7 @@
     </div>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
-        <a href="#" class="nav-link">
+        <a href="index.html" class="nav-link">
           <i class="fas fa-home"></i>
           Accueil
         </a>

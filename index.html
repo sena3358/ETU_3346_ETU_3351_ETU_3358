@@ -10,9 +10,12 @@
   <link href="ws/assets/fontawesome/css/all.min.css" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #2c3e50;
-      --secondary-color: #34495e;
-      --accent-color: #3498db;
+        /* --primary-color: #000000;
+      --secondary-color: #000000; */
+      --primary-color: white;
+      --secondary-color: white;
+      --accent-color: #000768;
+      --success-color: #054314;
     }
     
     body {
@@ -22,7 +25,7 @@
     
     .sidebar {
       background-color: var(--primary-color);
-      color: white;
+      color: black;
       height: 100vh;
       position: fixed;
       padding-top: 1rem;
@@ -38,16 +41,21 @@
     }
     
     .nav-link {
-      color: rgba(255,255,255,0.8);
+      color: black;
       border-radius: 0.25rem;
       margin: 0.25rem 1rem;
       padding: 0.75rem 1rem;
       transition: all 0.3s;
     }
-    
+  
+
     .nav-link:hover, .nav-link.active {
-      color: white;
-      background-color: var(--secondary-color);
+      color: #848484;
+      background-color: rgb(211, 211, 211);
+    }
+
+    .nav-link.active {
+      background-color: #000768;
     }
     
     .nav-link i {
@@ -78,7 +86,7 @@
     .total-display {
       font-size: 1.25rem;
       font-weight: 600;
-      color: var(--primary-color);
+      color: var(--accent-color);
       background-color: #e9f5ff;
       padding: 1rem;
       border-radius: 0.5rem;
