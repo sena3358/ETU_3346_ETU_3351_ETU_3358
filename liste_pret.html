@@ -472,7 +472,6 @@
       filteredPrets.forEach(p => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${p.id}</td>
           <td>${p.nom_client} ${p.prenom_client}</td>
           <td>${p.type_pret}</td>
           <td>${parseFloat(p.montant).toFixed(2)} Ar</td>
