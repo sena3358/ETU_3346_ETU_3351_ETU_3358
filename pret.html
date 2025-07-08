@@ -342,7 +342,7 @@
   <script src="ws/assets/bootstrap5/dist/js/bootstrap.bundle.min.js"></script>
   
   <script>
-    const apiBase = "http://localhost/ETU_3346_ETU_3351_ETU_3358/ws";
+    const apiBase = "http://localhost/Finance/ETU_3346_ETU_3351_ETU_3358/ws";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -429,6 +429,9 @@
                   <a class="dropdown-item" href="#" onclick="supprimerPret(${p.id}); return false;">
                     <i class="fas fa-trash-alt"></i> Supprimer
                   </a>
+                  <a class="dropdown-item" href="#" onclick="rembourserPret(${p.id}); return false;">
+                  <i class="fas fa-coins"></i> Rembourser
+                </a>
                 </div>
               </div>
             </td>
@@ -437,7 +440,14 @@
         });
       });
     }
-
+ function rembourserPret(id) {
+    if (confirm("Voulez-vous vraiment générer les remboursements pour ce prêt ?")) {
+      ajax("POST", `/remboursements/generer/${id}`, null, (res) => {
+        alert("Remboursements générés avec succès !");
+        chargerPrets(); // recharger la liste si nécessaire
+      });
+    }
+  }
     function toggleDropdown(button) {
       const dropdownMenu = button.nextElementSibling;
       const isShown = dropdownMenu.classList.contains('show');

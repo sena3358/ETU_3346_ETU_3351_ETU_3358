@@ -3,7 +3,7 @@ require_once __DIR__ . '/../models/Remboursement.php';
 require_once __DIR__ . '/../helpers/Utils.php';
 
 
-class RemboursementController {
+class SimulationController {
    public static function sommeInteretsEntreDate($dateDebut) {
     $somme = Remboursement::sommeInterets($dateDebut);
     if($somme['total']==null){

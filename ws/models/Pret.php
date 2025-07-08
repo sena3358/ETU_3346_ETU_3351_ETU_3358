@@ -25,7 +25,7 @@ class Pret {
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
+    
     public static function getAmortissement($pretId) {
         $db = getDB();
         
@@ -35,7 +35,8 @@ class Pret {
         
         // Calculer le tableau d'amortissement (simplifié)
         $montant = $pret['montant'];
-        $tauxMensuel = $pret['taux'] / 100 / 12;
+        $valeur=$pret['assurance']+$pret['taux'];
+        $tauxMensuel = $valeur / 100 / 12;
         $duree = $pret['duree'];
         $mensualite = $montant * $tauxMensuel * pow(1 + $tauxMensuel, $duree) / (pow(1 + $tauxMensuel, $duree) - 1);
         
