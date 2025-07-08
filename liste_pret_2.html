@@ -256,10 +256,21 @@
   <script src="ws/assets/bootstrap5/dist/js/bootstrap.bundle.min.js"></script>
   
   <script>
-    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
+    const apiBase = "http://localhost/Finance/ETU_3346_ETU_3351_ETU_3358/ws";
     let allPrets = [];
     let filteredPrets = [];
-
+        
+    function ajax(method, url, data, callback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, apiBase + url, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          callback(JSON.parse(xhr.responseText));
+        }
+      };
+      xhr.send(data);
+    }
     function chargerTypesPret() {
       fetch(`${apiBase}/types_pret`)
         .then(response => response.json())
@@ -325,11 +336,10 @@
             </span>
           </td>
           <td>
-            <button class="btn btn-sm btn-outline-primary btn-action ${isEnAttente ? 'btn-disabled' : ''}" 
-                    onclick="${!isEnAttente ? `simulerPret(${p.id})` : 'return false'}" 
-                    ${isEnAttente ? 'disabled' : ''}>
-              <i class="fas fa-calculator"></i> Simuler
-            </button>
+           <button class="btn btn-sm btn-outline-primary btn-action" 
+                  onclick="simulerPret(${p.id})">
+            <i class="fas fa-calculator"></i> Simuler
+          </button>
           </td>
           <td>
             <button class="btn btn-sm btn-outline-success btn-action ${isEnAttente ? 'btn-disabled' : ''}" 

@@ -40,9 +40,15 @@ class Pret {
         
         // Calculer le tableau d'amortissement (simplifié)
         $montant = $pret['montant'];
-        $valeur=$pret['assurance']+$pret['taux'];
+        $valeur=$pret['taux'];
         $tauxMensuel = $valeur / 100 / 12;
         $duree = $pret['duree'];
+        
+        $assurance=$pret['assurance'];
+        $assuranceMensuel=$assurance /100/ 12;
+        $assuranceMensuel=$assuranceMensuel*$montant;
+        $assuranceMensuel=$assuranceMensuel/$duree;
+
         $mensualite = $montant * $tauxMensuel * pow(1 + $tauxMensuel, $duree) / (pow(1 + $tauxMensuel, $duree) - 1);
         
         $amortissement = [];
@@ -79,7 +85,8 @@ class Pret {
                 'interets' => round($interets, 2),
                 'mensualite' => round($mensualite, 2),
                 'capital_restant' => max(0, round($capitalRestant, 2)),
-                'statut' => $paye ? 'payé' : 'en attente'
+                'statut' => $paye ? 'payé' : 'en attente',
+                'assurance'=> round($assuranceMensuel, 2)
             ];
             
             $dateDebut->add(new DateInterval('P1M'));

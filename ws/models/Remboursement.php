@@ -134,7 +134,7 @@ public static function getRemboursementsAvecNomParDate($date) {
     if (!$amortissements) return;
 
     $stmt = $db->prepare("INSERT INTO remboursement (id_pret, date_paiement, amortissement, interet) VALUES (?, ?, ?, ?)");
-
+    $montant=0;
     foreach ($amortissements as $a) {
         $stmt->execute([
             $pretId,
@@ -142,7 +142,10 @@ public static function getRemboursementsAvecNomParDate($date) {
             $a['capital'],
             $a['interets']
         ]);
+        $montant+=$a['mensualite'];
     }
+        $update = $db->prepare("UPDATE fondTotal SET montantTotal = montantTotal + ? WHERE id = 1");
+        $update->execute([$montant]);
 
     }
 }

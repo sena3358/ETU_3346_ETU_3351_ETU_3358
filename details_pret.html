@@ -304,6 +304,7 @@
                   <th>Date</th>
                   <th>Capital</th>
                   <th>Intérêts</th>
+                  <th>Assurance</th>
                   <th>Mensualité</th>
                   <th>Capital restant</th>
                 </tr>
@@ -335,6 +336,12 @@
             </div>
             <div class="col-md-4">
               <div class="info-group">
+                <div class="info-value" id="total-assurance"></div>
+                <div class="info-label">Assurance</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-group">
                 <div class="info-value" id="reste-a-payer"></div>
                 <div class="info-label">Reste à payer</div>
               </div>
@@ -355,7 +362,7 @@
     // Récupération de l'ID du prêt depuis l'URL
     const urlParams = new URLSearchParams(window.location.search);
     const pretId = urlParams.get('id');
-    const apiBase = "/Exo/S4/ETU_3346_ETU_3351_ETU_3358/ws";
+    const apiBase = "http://localhost/Finance/ETU_3346_ETU_3351_ETU_3358/ws";
     
     // Fonction pour formater les nombres
     function formatMoney(amount) {
@@ -440,6 +447,7 @@
           
           let totalCapital = 0;
           let totalInterets = 0;
+          let totalAssurance=0;
           
           amortissement.forEach(echeance => {
             const tr = document.createElement("tr");
@@ -448,20 +456,23 @@
               <td>${formatDate(echeance.date_echeance)}</td>
               <td>${formatMoney(echeance.capital)}</td>
               <td>${formatMoney(echeance.interets)}</td>
+              <td>${formatMoney(echeance.assurance)}</td>
               <td>${formatMoney(echeance.mensualite)}</td>
               <td>${formatMoney(echeance.capital_restant)}</td>
             `;
             document.getElementById('pret-statut').textContent = echeance.statut;
             tbody.appendChild(tr);
             
-              totalCapital += parseFloat(echeance.capital);
+              totalCapital += parseFloat(echeance.mensualite)+parseFloat(echeance.assurance);
               totalInterets += parseFloat(echeance.interets);
+              totalAssurance+=parseFloat(echeance.assurance);
             
           });
           
           // Mettre à jour le résumé
           document.getElementById('total-rembourse').textContent = formatMoney(totalCapital + totalInterets);
           document.getElementById('total-interets').textContent = formatMoney(totalInterets);
+          document.getElementById('total-assurance').textContent = formatMoney(totalAssurance);
           
           // Calculer le reste à payer
           fetch(`${apiBase}/prets/${pretId}`)

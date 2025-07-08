@@ -57,6 +57,14 @@ CREATE TABLE remboursement (
     interet DECIMAL(12,2) NOT NULL,
     FOREIGN KEY (id_pret) REFERENCES pret(id)
 );
+CREATE TABLE remboursement_sim (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_pret INT NOT NULL,
+    date_paiement DATE NOT NULL,
+    amortissement DECIMAL(12,2) NOT NULL,
+    interet DECIMAL(12,2) NOT NULL,
+    FOREIGN KEY (id_pret) REFERENCES pret(id)
+);
 
 --Data
 
